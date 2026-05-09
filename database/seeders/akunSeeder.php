@@ -14,13 +14,27 @@ class akunSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('akun')->insert([
+        DB::table('akun')->insert([[
             'username' => 'Axel',
             'email' => '1@1',
             'password' => Hash::make('1'),
             'user_role' => 'mahasiswa',
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ],[
+            'username' => 'Budiman',
+            'email' => '2@2',
+            'password' => Hash::make('2'),
+            'user_role' => 'mahasiswa',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],[
+            'username'=>'Ayu',
+            'email'=>'3@3',
+            'password'=>Hash::make('3'),
+            'user_role'=>'mahasiswa',
+            'created_at'=>now(),
+            'updated_at'=>now(),
+        ]]);
     }
 }

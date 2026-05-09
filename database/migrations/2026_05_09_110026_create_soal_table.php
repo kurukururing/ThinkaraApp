@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('soal', function (Blueprint $table) {
             $table->id('id_soal');
             $table->unsignedBigInteger('id_latihan');
-            $table->string('tpoik');
+            $table->string('topik');
             $table->text('isi_soal');
             $table->timestamps();
 
