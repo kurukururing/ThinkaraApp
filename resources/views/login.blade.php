@@ -9,7 +9,7 @@
 </head>
 <body class="bg-surface text-slate-700 flex min-h-screen font-nunito">
 
-    {{-- Sisi Kiri: Branding (image_03d440.jpg) --}}
+    {{-- Sisi Kiri: Branding --}}
     <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand via-brand-dark to-accent relative overflow-hidden items-center justify-center p-12">
         <div class="absolute top-0 left-0 w-full h-full bg-white/5 opacity-50 backdrop-blur-3xl skew-y-6 transform -translate-y-1/2"></div>
         <div class="relative z-10 text-white max-w-lg text-center lg:text-left">
@@ -35,21 +35,32 @@
                 <p class="text-slate-500 font-medium text-sm">Silakan masukkan detail akun Anda.</p>
             </div>
 
-            <form class="space-y-6">
+            {{-- Pesan Error Validasi Global --}}
+            @if ($errors->any())
+                <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-2xl text-sm">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
+                @csrf
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2 ml-1">Email</label>
-                    <input type="email" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="nama@email.com">
+                    <label class="block text-xs font-bold text-slate-700 mb-2 ml-1">Username</label>
+                    <input type="text" name="username" value="{{ old('username') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Masukkan username Anda" required>
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-2 ml-1">
                         <label class="block text-xs font-bold text-slate-700">Password</label>
                         <a href="#" class="text-[11px] text-brand font-bold hover:underline">Lupa Password?</a>
                     </div>
-                    <input type="password" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="••••••••">
+                    <input type="password" name="password" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="••••••••" required>
                 </div>
-                <button type="button" class="w-full bg-primary text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
-                    <a href="/dashboard">Masuk</a>
+                
+                {{-- PERBAIKAN: Tombol dipastikan bertipe submit agar memicu route POST --}}
+                <button type="submit" class="w-full bg-primary text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
+                    Masuk
                 </button>
+
                 <p class="text-center text-slate-500 text-[13px] mt-8">
                     Belum punya akun? <a href="/register" class="text-accent font-bold hover:underline ml-1">Daftar sekarang</a>
                 </p>

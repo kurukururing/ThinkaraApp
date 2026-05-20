@@ -80,7 +80,7 @@
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=rac" alt="User" class="w-full h-full object-cover bg-slate-50">
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-sm font-extrabold text-slate-800">rac</span>
+                    <span class="text-sm font-extrabold text-slate-800">{{ Auth::user()->username }}</span>
                     <span class="text-[11px] font-bold text-slate-400">Siswa</span>
                 </div>
             </div>

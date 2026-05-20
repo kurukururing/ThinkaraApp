@@ -1,48 +1,74 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Auth;
 
+// =========================================================================
+// 1. HALAMAN UMUM (Bisa diakses siapa saja)
+// =========================================================================
 Route::get('/', function () {
     return view('index');
 });
 
+// =========================================================================
+// 2. AKSES GUEST (Hanya untuk yang BELUM login)
+// =========================================================================
 Route::get('/login', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
     return view('login');
-});
+})->name('login');
 
 Route::get('/register', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
     return view('register');
-});
+})->name('register');
 
-Route::get('/dashboard', function () {
-    return view('main.dashboard');
-});
+// Amankan rute pengiriman data form POST ke Controller
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
-Route::get('/leaderboard', function () {
-    return view('main.peringkat');
-});
+// =========================================================================
+// 3. PROTEKSI DASHBOARD & FITUR UTAMA (Wajib Login)
+// =========================================================================
+Route::middleware(['auth'])->group(function () {
+    
+    // Rute Autentikasi
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/profil', function () {
-    return view('main.profil');
-});
+    // Rute Mahasiswa & Profil
+    Route::get('/dashboard', [MahasiswaController::class, 'dashboard'])->name('dashboard');
+    Route::get('/profil', [MahasiswaController::class, 'profil'])->name('profil');
+    Route::post('/profil/update', [MahasiswaController::class, 'updateProfil'])->name('profil.update');
+    Route::post('/profil/password', [MahasiswaController::class, 'updatePassword'])->name('profil.password.update');
 
+    // Rute Fitur Utama
+    Route::get('/leaderboard', function () {
+        return view('main.peringkat');
+    })->name('leaderboard');
 
-Route::get('/arena', function () {
-    return view('main.arena');
-});
+    Route::get('/arena', function () {
+        return view('main.arena');
+    })->name('arena');
 
-Route::get('/argumentbuilder', function () {
-    return view('main.argumentbuilder');
-});
+    Route::get('/argumentbuilder', function () {
+        return view('main.argumentbuilder');
+    })->name('argumentbuilder');
 
-Route::get('/fixargument', function () {
-    return view('main.fixargument');
-});
+    Route::get('/fixargument', function () {
+        return view('main.fixargument');
+    })->name('fixargument');
 
-Route::get('/fallacyfinder', function () {
-    return view('main.fallacyfinder');
-});
+    Route::get('/fallacyfinder', function () {
+        return view('main.fallacyfinder');
+    })->name('fallacyfinder');
 
-Route::get('/gamifiedqte', function () {
-    return view('main.gamifiedqte');
+    Route::get('/gamifiedqte', function () {
+        return view('main.gamifiedqte');
+    })->name('gamifiedqte');
 });
