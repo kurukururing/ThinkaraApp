@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SoalController;
 use Illuminate\Support\Facades\Auth;
 
 // =========================================================================
@@ -56,17 +57,12 @@ Route::middleware(['auth'])->group(function () {
         return view('main.arena');
     })->name('arena');
 
-    Route::get('/argumentbuilder', function () {
-        return view('main.argumentbuilder');
-    })->name('argumentbuilder');
+    // Rute Latihan Soal
+    Route::get('/fixargument', [SoalController::class, 'getFixArgument'])->name('fixargument');
+    Route::post('/fixargument/{soal}', [SoalController::class, 'processBuilderAnswer'])->name('fixargument.process');
 
-    Route::get('/fixargument', function () {
-        return view('main.fixargument');
-    })->name('fixargument');
-
-    Route::get('/fallacyfinder', function () {
-        return view('main.fallacyfinder');
-    })->name('fallacyfinder');
+    Route::get('/fallacyfinder', [SoalController::class, 'getFallacyFinder'])->name('fallacyfinder');
+    Route::post('/fallacyfinder/{soal}', [SoalController::class, 'processFallacyAnswer'])->name('fallacyfinder.process');
 
     Route::get('/gamifiedqte', function () {
         return view('main.gamifiedqte');
