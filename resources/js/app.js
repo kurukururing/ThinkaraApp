@@ -10,25 +10,60 @@ document.addEventListener('DOMContentLoaded', function () {
         const submitBtn = document.getElementById('kirim-fix-argument');
         const soalId = fixArgumentPage.dataset.soalId;
 
-        // Fungsi untuk memindahkan item dari pilihan ke area jawaban
-        pilihanContainer.addEventListener('click', function (e) {
-            if (e.target.classList.contains('choice-item')) {
-                perbaikanContainer.appendChild(e.target);
+        const choiceItems = document.querySelectorAll('.choice-item');
+        
+        // Menambahkan atribut draggable dan event listener ke setiap elemen
+        choiceItems.forEach(item => {
+            item.setAttribute('draggable', 'true');
+            item.style.cursor = 'grab';
+            
+            item.addEventListener('dragstart', (e) => {
+                item.classList.add('dragging');
+                item.style.opacity = '0.5';
+                if (e.dataTransfer) {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', item.dataset.id || 'item');
+                }
+            });
+            
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                item.style.opacity = '1';
+                
                 const placeholder = perbaikanContainer.querySelector('.placeholder');
-                if (placeholder) placeholder.style.display = 'none'; // Sembunyikan placeholder
+                if (placeholder) {
+                    const placeholder = perbaikanContainer.querySelector('.placeholder');
+                    placeholder.style.display = perbaikanContainer.querySelectorAll('.choice-item').length > 0 ? 'none' : 'block';
+                }
+            });
+        });
+
+        // Reorder (pindah susunan) HANYA diaktifkan di perbaikan area (list vertikal)
+        perbaikanContainer.addEventListener('dragenter', e => e.preventDefault());
+        perbaikanContainer.addEventListener('dragover', e => {
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            const afterElement = getDragAfterElement(perbaikanContainer, e.clientY);
+            const draggable = document.querySelector('.dragging');
+            if (draggable) {
+                if (afterElement == null) {
+                    perbaikanContainer.appendChild(draggable);
+                } else {
+                    perbaikanContainer.insertBefore(draggable, afterElement);
+                }
             }
         });
 
-        // Fungsi untuk mengembalikan item dari area jawaban ke pilihan
-        perbaikanContainer.addEventListener('click', function (e) {
-            if (e.target.classList.contains('choice-item')) {
-                pilihanContainer.appendChild(e.target);
-                // Jika area jawaban kosong, tampilkan lagi placeholder
-                if (perbaikanContainer.querySelectorAll('.choice-item').length === 0) {
-                    const placeholder = perbaikanContainer.querySelector('.placeholder');
-                    if (placeholder) placeholder.style.display = 'block';
-                }
-            }
+        // Container pilihan hanya berfungsi menerima elemen tanpa kalkulasi posisi 
+        pilihanContainer.addEventListener('dragenter', e => e.preventDefault());
+        pilihanContainer.addEventListener('dragover', e => {
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+        });
+        pilihanContainer.addEventListener('drop', e => {
+            e.preventDefault();
+            const draggable = document.querySelector('.dragging');
+            if (draggable) pilihanContainer.appendChild(draggable);
         });
 
         // Fungsi untuk mengirim jawaban
@@ -62,6 +97,92 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Terjadi kesalahan saat mengirim jawaban.');
             });
         });
+    }
+
+    // --- Logika untuk Halaman Argument Builder (argumentbuilder.blade.php) ---
+    const argumentBuilderPage = document.getElementById('argument-builder-page');
+    if (argumentBuilderPage) {
+        const pilihanContainer = document.getElementById('pilihan-jawaban-container');
+        const dropZones = document.querySelectorAll('.builder-drop-zone');
+        const submitBtn = document.getElementById('kirim-argument-builder');
+        const soalId = argumentBuilderPage.dataset.soalId;
+
+        const choiceItems = document.querySelectorAll('.choice-item');
+        
+        choiceItems.forEach(item => {
+            item.setAttribute('draggable', 'true');
+            item.style.cursor = 'grab';
+            item.addEventListener('dragstart', (e) => {
+                item.classList.add('dragging');
+                item.style.opacity = '0.5';
+                if (e.dataTransfer) {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', item.dataset.id || 'item');
+                }
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                item.style.opacity = '1';
+                updateBuilderPlaceholders();
+            });
+        });
+
+        function updateBuilderPlaceholders() {
+            dropZones.forEach(zone => {
+                const placeholder = zone.querySelector('.placeholder');
+                if (placeholder) {
+                    placeholder.style.display = zone.querySelectorAll('.choice-item').length > 0 ? 'none' : 'block';
+                }
+            });
+        }
+
+        // Pilihan awal berfungsi menerima elemen balik
+        pilihanContainer.addEventListener('dragenter', e => e.preventDefault());
+        pilihanContainer.addEventListener('dragover', e => {
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+        });
+        pilihanContainer.addEventListener('drop', e => {
+            e.preventDefault();
+            const draggable = document.querySelector('.dragging');
+            if (draggable) pilihanContainer.appendChild(draggable);
+        });
+
+        // Masing-masing kotak (Claim, dll) hanya bisa menerima 1 elemen
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragenter', e => e.preventDefault());
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            });
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                const draggable = document.querySelector('.dragging');
+                if (draggable) {
+                    const existingItem = zone.querySelector('.choice-item');
+                    if (existingItem && existingItem !== draggable) pilihanContainer.appendChild(existingItem);
+                    zone.appendChild(draggable);
+                    updateBuilderPlaceholders();
+                }
+            });
+        });
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function () {
+                const answerIds = Array.from(dropZones).map(zone => zone.querySelector('.choice-item')?.dataset.id).filter(id => id);
+                
+                if (answerIds.length < dropZones.length) return alert('Harap isi semua bagian argumen sebelum mengirim.');
+
+                fetch(`/argumentbuilder/${soalId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                    body: JSON.stringify({ jawaban_items: answerIds })
+                }).then(res => res.json()).then(data => {
+                    alert(data.message);
+                    if (data.is_correct) window.location.href = '/arena';
+                }).catch(err => console.error(err));
+            });
+        }
     }
 
     // --- Logika untuk Halaman Fallacy Finder (fallacyfinder.blade.php) ---
@@ -115,5 +236,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Terjadi kesalahan saat mengirim jawaban.');
             });
         });
+    }
+
+    // Fungsi pendukung untuk menentukan posisi elemen yang di-drag
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.choice-item:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 });

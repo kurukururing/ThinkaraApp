@@ -59,10 +59,13 @@ Route::middleware(['auth'])->group(function () {
 
     // Rute Latihan Soal
     Route::get('/fixargument', [SoalController::class, 'getFixArgument'])->name('fixargument');
-    Route::post('/fixargument/{soal}', [SoalController::class, 'processBuilderAnswer'])->name('fixargument.process');
+    Route::post('/fixargument/{id}', [SoalController::class, 'processBuilderAnswer'])->name('fixargument.process');
+
+    Route::get('/argumentbuilder', [SoalController::class, 'getArgumentBuilder'])->name('argumentbuilder');
+    Route::post('/argumentbuilder/{id}', [SoalController::class, 'processBuilderAnswer'])->name('argumentbuilder.process');
 
     Route::get('/fallacyfinder', [SoalController::class, 'getFallacyFinder'])->name('fallacyfinder');
-    Route::post('/fallacyfinder/{soal}', [SoalController::class, 'processFallacyAnswer'])->name('fallacyfinder.process');
+    Route::post('/fallacyfinder/{id}', [SoalController::class, 'processFallacyAnswer'])->name('fallacyfinder.process');
 
     Route::get('/gamifiedqte', function () {
         return view('main.gamifiedqte');

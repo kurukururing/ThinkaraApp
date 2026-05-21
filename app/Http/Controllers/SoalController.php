@@ -23,9 +23,25 @@ class SoalController extends Controller
         }
         
         // Mengambil pilihan jawaban yang berelasi dengan soal tersebut (diacak posisinya)
-        $items = SoalItemBuilder::where('id_soal', $soal->id)->inRandomOrder()->get();
+        $items = SoalItemBuilder::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
         
         return view('main.fixargument', compact('soal', 'items'));
+    }
+
+    /**
+     * Menampilkan halaman Argument Builder dengan data dinamis.
+     */
+    public function getArgumentBuilder()
+    {
+        $soal = Soal::whereHas('builderItems')->inRandomOrder()->first();
+
+        if (!$soal) {
+            return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
+        }
+        
+        $items = SoalItemBuilder::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
+        
+        return view('main.argumentbuilder', compact('soal', 'items'));
     }
 
     /**
@@ -41,7 +57,7 @@ class SoalController extends Controller
         }
         
         // Mengambil pilihan jawaban fallacy yang berelasi dengan soal tersebut
-        $opsiFallacy = SoalItemFallacy::where('id_soal', $soal->id)->inRandomOrder()->get();
+        $opsiFallacy = SoalItemFallacy::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
 
         return view('main.fallacyfinder', compact('soal', 'opsiFallacy'));
     }
@@ -49,8 +65,10 @@ class SoalController extends Controller
     /**
      * Logika khusus untuk memproses pengumpulan jawaban tipe Builder (Argument Builder / Fix Argument).
      */
-    public function processBuilderAnswer(Request $request, Soal $soal)
+    public function processBuilderAnswer(Request $request, $id)
     {
+        $soal = Soal::findOrFail($id);
+
         $request->validate([
             'jawaban_items'   => 'required|array',
             'jawaban_items.*' => 'integer',
@@ -58,7 +76,7 @@ class SoalController extends Controller
 
         // Mengambil array ID item builder yang seharusnya dirangkai (is_correct = true).
         // Asumsi Primary Key adalah 'id'. Sesuaikan jika berbeda.
-        $correctItems = SoalItemBuilder::where('id_soal', $soal->id)
+        $correctItems = SoalItemBuilder::where('id_soal', $soal->id_soal)
             ->where('is_correct', true)
             ->pluck('id')
             ->toArray();
@@ -87,15 +105,17 @@ class SoalController extends Controller
     /**
      * Logika khusus untuk memproses tebakan jawaban tipe Fallacy.
      */
-    public function processFallacyAnswer(Request $request, Soal $soal)
+    public function processFallacyAnswer(Request $request, $id)
     {
+        $soal = Soal::findOrFail($id);
+
         $request->validate([
             'id_item_fallacy' => 'required|integer',
         ]);
 
         // Cari item fallacy yang dipilih oleh user
         $jawabanUser = SoalItemFallacy::where('id', $request->id_item_fallacy)
-                                      ->where('id_soal', $soal->id)
+                                      ->where('id_soal', $soal->id_soal)
                                       ->first();
 
         if (!$jawabanUser) {
