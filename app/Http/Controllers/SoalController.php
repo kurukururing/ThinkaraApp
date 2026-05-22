@@ -23,8 +23,13 @@ class SoalController extends Controller
             return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
         }
         
-        // Mengambil pilihan jawaban yang berelasi dengan soal tersebut (diacak posisinya)
-        $items = SoalItemBuilder::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
+        // Mengambil pilihan jawaban yang berelasi dengan soal tersebut (pastikan hanya 1 dari tiap tipe)
+        $items = SoalItemBuilder::where('id_soal', $soal->id_soal)
+            ->where('is_correct', true)
+            ->get()
+            ->unique('tipe') // Filter aman dari data ganda di database
+            ->values()
+            ->shuffle(); // Acak posisinya (di memory)
         
         return view('main.fixargument', compact('soal', 'items'));
     }
@@ -41,7 +46,12 @@ class SoalController extends Controller
             return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
         }
         
-        $items = SoalItemBuilder::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
+        $items = SoalItemBuilder::where('id_soal', $soal->id_soal)
+            ->where('is_correct', true)
+            ->get()
+            ->unique('tipe')
+            ->values()
+            ->shuffle();
         
         return view('main.argumentbuilder', compact('soal', 'items'));
     }
@@ -93,10 +103,12 @@ class SoalController extends Controller
             'jawaban_items.*' => 'integer',
         ]);
 
-        // Mengambil susunan jawaban yang benar (is_correct = true)
+        // Mengambil susunan jawaban yang benar dan memastikan hanya ada 4 tipe unik
         $correctItemsQuery = SoalItemBuilder::where('id_soal', $soal->id_soal)
             ->where('is_correct', true)
-            ->get();
+            ->get()
+            ->unique('tipe')
+            ->values();
         
         // Urutkan kunci jawaban berdasarkan hierarki argumentasi:
         // Claim -> Evidence -> Reasoning -> Reference
@@ -230,11 +242,15 @@ class SoalController extends Controller
 
         $kunciBuilder = collect();
         if (in_array($pembahasanData['type'], ['argumentbuilder', 'fixargument'])) {
-            $kunciBuilder = SoalItemBuilder::where('id_soal', $id)->where('is_correct', true)->get();
+            $kunciBuilder = SoalItemBuilder::where('id_soal', $id)
+                ->where('is_correct', true)
+                ->get()
+                ->unique('tipe'); // Memastikan hanya ada 4 jawaban (1 dari tiap tipe)
+                
             $urutanArgumen = ['claim', 'evidence', 'reasoning', 'reference'];
             $kunciBuilder = $kunciBuilder->sortBy(function ($item) use ($urutanArgumen) {
                 return array_search($item->tipe, $urutanArgumen);
-            });
+            })->values();
         }
 
         $kunciFallacy = null;

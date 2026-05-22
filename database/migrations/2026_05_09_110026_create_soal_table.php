@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_latihan');
             $table->string('topik');
             $table->text('isi_soal');
+            $table->text('penjelasan')->nullable();
             $table->timestamps();
 
             $table->foreign('id_latihan')
