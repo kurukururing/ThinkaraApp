@@ -7,6 +7,7 @@ use App\Models\Soal;
 use App\Models\SoalItemBuilder;
 use App\Models\SoalItemFallacy; // Pastikan model ini sudah dibuat
 use App\Models\SoalItemQte;
+use App\Models\HasilSesiLatihan;
 
 class SoalController extends Controller
 {
@@ -130,9 +131,22 @@ class SoalController extends Controller
         // Mengecek apakah urutan jawaban user persis sama dengan kunci jawaban
         $isAllCorrect = ($userAnswers === $correctItems);
         
-        if ($isAllCorrect && auth()->check()) {
+        // Hitung skor & xp
+        $skorDidapat = $isAllCorrect ? 400 : ($correctCount * 100); 
+        $xpDidapat   = $isAllCorrect ? 100 : ($correctCount * 25);
+        $durasi    = $request->input('durasiBuilder', null); // Durasi dalam detik
+
+        if (auth()->check()) {
             // TODO: Tambahkan logika penambahan XP/Skor ke user
             // Contoh: auth()->user()->mahasiswa->increment('skor', 10);
+            \App\Models\HasilSesiLatihan::create([ // simpan pada tabel hasil_sesi_latihan
+                'id_akun'      => auth()->user()->id_akun, 
+                'id_latihan'   => $soal->id_latihan,
+                'xp'           => $xpDidapat, 
+                'skor'         => $skorDidapat, 
+                'waktu_main'   => now(),
+                'durasi'       => $durasi,
+            ]);
         }
         
         // Membedakan tipe data pembahasan secara spesifik berdasarkan rute (Fix Argument / Argument Builder)
