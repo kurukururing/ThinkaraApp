@@ -75,7 +75,7 @@
                 <h3 class="text-sm font-black text-slate-800 mb-6">Pilihan Jawaban</h3>
                 <div id="pilihan-jawaban-container" class="flex flex-wrap gap-3 min-h-[4rem] items-start content-start">
                     @foreach($items as $item)
-                        <div data-id="{{ $item->id }}" class="choice-item border border-slate-200 bg-white rounded-xl px-5 py-3 text-xs font-bold text-slate-500 cursor-grab hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors shadow-sm">{{ $item->isi_item }}</div>
+                        <div data-id="{{ $item->id_item_builder }}" class="choice-item border border-slate-200 bg-white rounded-xl px-5 py-3 text-xs font-bold text-slate-500 cursor-grab hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors shadow-sm">{{ $item->isi_item }}</div>
                     @endforeach
                 </div>
             </div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Soal;
 use App\Models\SoalItemBuilder;
 use App\Models\SoalItemFallacy; // Pastikan model ini sudah dibuat
+use App\Models\SoalItemQte;
 
 class SoalController extends Controller
 {
@@ -14,8 +15,8 @@ class SoalController extends Controller
      */
     public function getFixArgument()
     {
-        // Mengambil 1 soal acak (dapat disesuaikan jika ingin mengurutkan berdasarkan level)
-        $soal = Soal::whereHas('builderItems')->inRandomOrder()->first();
+        // ID Latihan 3 = Fix The Argument
+        $soal = Soal::where('id_latihan', 3)->whereHas('builderItems')->inRandomOrder()->first();
 
         if (!$soal) {
             // Redirect atau tampilkan pesan jika tidak ada soal yang valid
@@ -33,7 +34,8 @@ class SoalController extends Controller
      */
     public function getArgumentBuilder()
     {
-        $soal = Soal::whereHas('builderItems')->inRandomOrder()->first();
+        // ID Latihan 1 = Argument Builder
+        $soal = Soal::where('id_latihan', 1)->whereHas('builderItems')->inRandomOrder()->first();
 
         if (!$soal) {
             return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
@@ -49,8 +51,8 @@ class SoalController extends Controller
      */
     public function getFallacyFinder()
     {
-        // Mengambil 1 soal acak yang memiliki item fallacy
-        $soal = Soal::whereHas('fallacyItems')->inRandomOrder()->first();
+        // ID Latihan 2 = Fallacy Finder
+        $soal = Soal::where('id_latihan', 2)->whereHas('fallacyItems')->inRandomOrder()->first();
 
         if (!$soal) {
             return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
@@ -60,6 +62,23 @@ class SoalController extends Controller
         $opsiFallacy = SoalItemFallacy::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
 
         return view('main.fallacyfinder', compact('soal', 'opsiFallacy'));
+    }
+
+    /**
+     * Menampilkan halaman Gamified QTE dengan data dinamis.
+     */
+    public function getGamifiedQte()
+    {
+        // ID Latihan 4 = Gamified QTE
+        $soal = Soal::where('id_latihan', 4)->whereHas('qteItems')->inRandomOrder()->first();
+
+        if (!$soal) {
+            return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
+        }
+        
+        $opsiQte = SoalItemQte::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
+
+        return view('main.gamifiedqte', compact('soal', 'opsiQte'));
     }
 
     /**
@@ -74,31 +93,52 @@ class SoalController extends Controller
             'jawaban_items.*' => 'integer',
         ]);
 
-        // Mengambil array ID item builder yang seharusnya dirangkai (is_correct = true).
-        // Asumsi Primary Key adalah 'id'. Sesuaikan jika berbeda.
-        $correctItems = SoalItemBuilder::where('id_soal', $soal->id_soal)
+        // Mengambil susunan jawaban yang benar (is_correct = true)
+        $correctItemsQuery = SoalItemBuilder::where('id_soal', $soal->id_soal)
             ->where('is_correct', true)
-            ->pluck('id')
-            ->toArray();
+            ->get();
         
-        $userAnswers = $request->jawaban_items;
+        // Urutkan kunci jawaban berdasarkan hierarki argumentasi:
+        // Claim -> Evidence -> Reasoning -> Reference
+        $urutanArgumen = ['claim', 'evidence', 'reasoning', 'reference'];
+        $correctItemsList = $correctItemsQuery->sortBy(function ($item) use ($urutanArgumen) {
+            return array_search($item->tipe, $urutanArgumen);
+        });
+
+        // Ambil array ID-nya saja dan re-index array-nya mulai dari 0
+        $correctItems = $correctItemsList->pluck('id_item_builder')->values()->toArray();
         
-        // Mengevaluasi jumlah jawaban yang tepat dan yang dijawab oleh user
-        // Menggunakan array_intersect_assoc untuk mencocokkan nilai sekaligus urutannya
+        // Parsing input jawaban user ke Integer untuk akurasi saat perbandingan
+        $userAnswers = array_map('intval', $request->jawaban_items);
+        
+        // Mengevaluasi kecocokan ID item dan posisi/urutannya di waktu bersamaan
         $correctCount = count(array_intersect_assoc($correctItems, $userAnswers));
         $totalCorrect = count($correctItems);
         
         // Mengecek apakah urutan jawaban user persis sama dengan kunci jawaban
         $isAllCorrect = ($userAnswers === $correctItems);
         
-        // TODO: Anda dapat menyisipkan logika penambahan XP/Skor untuk user yang sedang login di sini
+        if ($isAllCorrect && auth()->check()) {
+            // TODO: Tambahkan logika penambahan XP/Skor ke user
+            // Contoh: auth()->user()->mahasiswa->increment('skor', 10);
+        }
         
-        return response()->json([
-            'success'       => true,
+        // Membedakan tipe data pembahasan secara spesifik berdasarkan rute (Fix Argument / Argument Builder)
+        $type = $request->routeIs('fixargument.process') ? 'fixargument' : 'argumentbuilder';
+
+        // Simpan hasil ke session flash untuk ditampilkan di halaman Pembahasan
+        session()->flash('pembahasan_data', [
+            'type'          => $type,
             'is_correct'    => $isAllCorrect,
             'correct_count' => $correctCount,
             'total_correct' => $totalCorrect,
-            'message'       => $isAllCorrect ? 'Tepat sekali! Susunan argumen sudah benar.' : 'Masih ada bagian yang kurang tepat, coba perbaiki lagi.'
+            'message'       => $isAllCorrect ? 'Tepat sekali! Susunan argumen sudah benar.' : "Masih ada bagian yang kurang tepat ($correctCount dari $totalCorrect posisi benar). Coba perbaiki lagi!"
+        ]);
+
+        // Kirimkan response berupa URL tujuan (halaman pembahasan)
+        return response()->json([
+            'success'       => true,
+            'redirect_url'  => route('pembahasan', $id)
         ]);
     }
 
@@ -114,7 +154,7 @@ class SoalController extends Controller
         ]);
 
         // Cari item fallacy yang dipilih oleh user
-        $jawabanUser = SoalItemFallacy::where('id', $request->id_item_fallacy)
+        $jawabanUser = SoalItemFallacy::where('id_item_fallacy', $request->id_item_fallacy)
                                       ->where('id_soal', $soal->id_soal)
                                       ->first();
 
@@ -126,10 +166,87 @@ class SoalController extends Controller
 
         // TODO: Tambahkan kalkulasi dan penyimpanan Skor/XP ke profil user di sini
         
-        return response()->json([
-            'success'    => true,
+        // Simpan hasil ke session flash
+        session()->flash('pembahasan_data', [
+            'type'       => 'fallacy',
             'is_correct' => $isCorrect,
             'message'    => $isCorrect ? 'Analisis tajam! Anda menemukan cacat logikanya.' : 'Tebakan fallacy Anda masih keliru, coba lagi!'
         ]);
+
+        return response()->json([
+            'success'    => true,
+            'redirect_url' => route('pembahasan', $id)
+        ]);
+    }
+
+    /**
+     * Logika khusus untuk memproses jawaban Gamified QTE.
+     */
+    public function processQteAnswer(Request $request, $id)
+    {
+        $soal = Soal::findOrFail($id);
+
+        $request->validate([
+            'id_item_qte' => 'required|integer',
+        ]);
+
+        $jawabanUser = SoalItemQte::where('id_item_qte', $request->id_item_qte)
+                                  ->where('id_soal', $soal->id_soal)
+                                  ->first();
+
+        if (!$jawabanUser) {
+            return response()->json(['success' => false, 'message' => 'Jawaban tidak valid.'], 422);
+        }
+
+        $isCorrect = (bool) $jawabanUser->is_correct;
+
+        session()->flash('pembahasan_data', [
+            'type'       => 'qte',
+            'is_correct' => $isCorrect,
+            'message'    => $isCorrect ? 'Cepat dan Tepat! Analisis Anda akurat.' : 'Sayang sekali, reaksi atau jawaban Anda kurang tepat!'
+        ]);
+
+        return response()->json([
+            'success'      => true,
+            'redirect_url' => route('pembahasan', $id)
+        ]);
+    }
+
+    /**
+     * Menampilkan halaman Pembahasan
+     */
+    public function getPembahasan($id)
+    {
+        $soal = Soal::findOrFail($id);
+        $pembahasanData = session('pembahasan_data');
+
+        // Jika tidak ada data sesi pengerjaan (misal user me-refresh), kembalikan ke arena
+        if (!$pembahasanData) {
+            return redirect()->route('arena')->with('error', 'Sesi pembahasan telah berakhir.');
+        }
+
+        // Pertahankan sesi supaya tidak hilang jika user me-refresh halaman pembahasan
+        session()->reflash();
+
+        $kunciBuilder = collect();
+        if (in_array($pembahasanData['type'], ['argumentbuilder', 'fixargument'])) {
+            $kunciBuilder = SoalItemBuilder::where('id_soal', $id)->where('is_correct', true)->get();
+            $urutanArgumen = ['claim', 'evidence', 'reasoning', 'reference'];
+            $kunciBuilder = $kunciBuilder->sortBy(function ($item) use ($urutanArgumen) {
+                return array_search($item->tipe, $urutanArgumen);
+            });
+        }
+
+        $kunciFallacy = null;
+        if ($pembahasanData['type'] === 'fallacy') {
+            $kunciFallacy = SoalItemFallacy::where('id_soal', $id)->where('is_correct', true)->first();
+        }
+
+        $kunciQte = null;
+        if ($pembahasanData['type'] === 'qte') {
+            $kunciQte = SoalItemQte::where('id_soal', $id)->where('is_correct', true)->first();
+        }
+
+        return view('main.pembahasan', compact('soal', 'pembahasanData', 'kunciBuilder', 'kunciFallacy', 'kunciQte'));
     }
 }

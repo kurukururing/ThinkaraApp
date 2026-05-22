@@ -11,9 +11,13 @@ class SoalItemBuilder extends Model
 
     protected $table = 'soal_item_builder';
 
+    // Menyesuaikan primary key dengan migration
+    protected $primaryKey = 'id_item_builder';
+
     protected $fillable = [
         'id_soal',
         'isi_item',
+        'tipe',
         'is_correct',
     ];
 

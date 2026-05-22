@@ -2,6 +2,35 @@ document.addEventListener('DOMContentLoaded', function () {
     // Mengambil CSRF Token dari meta tag untuk keamanan request AJAX
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
+    // --- General Timer Logic (Berlaku untuk semua halaman latihan yang memiliki timer) ---
+    const timerDisplays = document.querySelectorAll('#qte-timer, .timer-display, [id$="-timer"]');
+    timerDisplays.forEach(display => {
+        let textParts = display.textContent.split(':');
+        let minutes = 10;
+        let seconds = 0;
+        
+        if (textParts.length === 2) {
+            minutes = parseInt(textParts[0].trim());
+            seconds = parseInt(textParts[1].trim());
+            if(isNaN(minutes)) minutes = 10;
+            if(isNaN(seconds)) seconds = 0;
+        }
+        
+        let timer = (minutes * 60) + seconds;
+        if (timer > 0) {
+            const interval = setInterval(function () {
+                let m = parseInt(timer / 60, 10);
+                let s = parseInt(timer % 60, 10);
+                m = m < 10 ? "0" + m : m;
+                s = s < 10 ? "0" + s : s;
+                display.textContent = m + " : " + s;
+                if (--timer < 0) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+    });
+
     // --- Logika untuk Halaman Fix The Argument (fixargument.blade.php) ---
     const fixArgumentPage = document.getElementById('fix-argument-page');
     if (fixArgumentPage) {
@@ -32,7 +61,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 const placeholder = perbaikanContainer.querySelector('.placeholder');
                 if (placeholder) {
-                    const placeholder = perbaikanContainer.querySelector('.placeholder');
                     placeholder.style.display = perbaikanContainer.querySelectorAll('.choice-item').length > 0 ? 'none' : 'block';
                 }
             });
@@ -87,9 +115,8 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data => {
-                alert(data.message); // Tampilkan pesan dari server
-                if (data.is_correct) {
-                    window.location.href = '/arena'; // Kembali ke arena jika benar
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
                 }
             })
             .catch(error => {
@@ -178,8 +205,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
                     body: JSON.stringify({ jawaban_items: answerIds })
                 }).then(res => res.json()).then(data => {
-                    alert(data.message);
-                    if (data.is_correct) window.location.href = '/arena';
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
                 }).catch(err => console.error(err));
             });
         }
@@ -199,11 +227,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (button) {
                 // Hapus style terpilih dari semua tombol
                 pilihanContainer.querySelectorAll('.fallacy-choice-btn').forEach(btn => {
-                    btn.classList.remove('border-brand', 'text-brand', 'bg-brand/10');
+                    btn.classList.remove('border-[#7c3aed]', 'text-[#7c3aed]', 'bg-[#7c3aed]/10');
+                    btn.classList.add('border-slate-200', 'text-slate-600', 'bg-white');
                 });
 
                 // Tambahkan style terpilih pada tombol yang diklik
-                button.classList.add('border-brand', 'text-brand', 'bg-brand/10');
+                button.classList.remove('border-slate-200', 'text-slate-600', 'bg-white');
+                button.classList.add('border-[#7c3aed]', 'text-[#7c3aed]', 'bg-[#7c3aed]/10');
                 selectedAnswerId = button.dataset.id;
             }
         });
@@ -226,9 +256,8 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data => {
-                alert(data.message); // Tampilkan pesan dari server
-                if (data.is_correct) {
-                    window.location.href = '/arena'; // Kembali ke arena jika benar
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
                 }
             })
             .catch(error => {
@@ -236,6 +265,85 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Terjadi kesalahan saat mengirim jawaban.');
             });
         });
+    }
+
+    // --- Logika untuk Halaman Gamified QTE (gamifiedqte.blade.php) ---
+    const gamifiedQtePage = document.getElementById('gamified-qte-page');
+    if (gamifiedQtePage) {
+        const pilihanContainer = document.getElementById('qte-pilihan-container');
+        const dropZones = document.querySelectorAll('.qte-drop-zone');
+        const submitBtn = document.getElementById('kirim-gamified-qte');
+        const soalId = gamifiedQtePage.dataset.soalId;
+
+        const choiceItems = document.querySelectorAll('.qte-choice-item');
+        
+        choiceItems.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                item.classList.add('dragging');
+                item.style.opacity = '0.5';
+                if (e.dataTransfer) {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', item.dataset.id || 'item');
+                }
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                item.style.opacity = '1';
+            });
+        });
+
+        if (pilihanContainer) {
+            pilihanContainer.addEventListener('dragenter', e => e.preventDefault());
+            pilihanContainer.addEventListener('dragover', e => {
+                e.preventDefault();
+                if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            });
+            pilihanContainer.addEventListener('drop', e => {
+                e.preventDefault();
+                const draggable = document.querySelector('.dragging');
+                if (draggable) pilihanContainer.appendChild(draggable);
+            });
+        }
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragenter', e => e.preventDefault());
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            });
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                const draggable = document.querySelector('.dragging');
+                if (draggable) {
+                    const existingItem = zone.querySelector('.qte-choice-item');
+                    if (existingItem && existingItem !== draggable) {
+                        pilihanContainer.appendChild(existingItem);
+                    }
+                    zone.appendChild(draggable);
+                }
+            });
+        });
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function() {
+                const answerItem = document.querySelector('.qte-drop-zone .qte-choice-item');
+                if (!answerItem) {
+                    alert('Silakan seret (drag) salah satu jawaban ke bagian yang kosong.');
+                    return;
+                }
+                const selectedQteAnswerId = answerItem.dataset.id;
+
+                fetch(`/gamifiedqte/${soalId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                    body: JSON.stringify({ id_item_qte: selectedQteAnswerId })
+                }).then(res => res.json()).then(data => {
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
+                }).catch(err => console.error(err));
+            });
+        }
     }
 
     // Fungsi pendukung untuk menentukan posisi elemen yang di-drag
@@ -252,4 +360,4 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
-});
+})

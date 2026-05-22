@@ -11,9 +11,12 @@ class SoalItemFallacy extends Model
 
     protected $table = 'soal_item_fallacy';
 
+    // Menyesuaikan primary key dengan migration
+    protected $primaryKey = 'id_item_fallacy';
+
     protected $fillable = [
         'id_soal',
-        'teks_opsi',
+        'jenis_kesalahan',
         'is_correct',
     ];
 

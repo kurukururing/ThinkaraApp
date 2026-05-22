@@ -37,4 +37,12 @@ class Soal extends Model
     {
         return $this->hasMany(SoalItemFallacy::class, 'id_soal', 'id_soal');
     }
+
+    /**
+     * Relasi One-to-Many ke SoalItemQte (Gamified QTE)
+     */
+    public function qteItems()
+    {
+        return $this->hasMany(SoalItemQte::class, 'id_soal', 'id_soal');
+    }
 }

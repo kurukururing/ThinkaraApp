@@ -67,7 +67,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/fallacyfinder', [SoalController::class, 'getFallacyFinder'])->name('fallacyfinder');
     Route::post('/fallacyfinder/{id}', [SoalController::class, 'processFallacyAnswer'])->name('fallacyfinder.process');
 
-    Route::get('/gamifiedqte', function () {
-        return view('main.gamifiedqte');
-    })->name('gamifiedqte');
+    Route::get('/gamifiedqte', [SoalController::class, 'getGamifiedQte'])->name('gamifiedqte');
+    Route::post('/gamifiedqte/{id}', [SoalController::class, 'processQteAnswer'])->name('gamifiedqte.process');
+
+    // Rute Halaman Pembahasan
+    Route::get('/pembahasan/{id}', [SoalController::class, 'getPembahasan'])->name('pembahasan');
 });

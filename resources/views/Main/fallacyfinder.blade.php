@@ -29,7 +29,7 @@
     <div id="pilihan-ganda-container" class="grid grid-cols-2 gap-4 mb-6">
         @if(isset($opsiFallacy) && $opsiFallacy->count() > 0)
             @foreach($opsiFallacy as $opsi)
-                <button class="fallacy-choice-btn bg-white border border-slate-100 py-6 rounded-2xl text-slate-700 font-extrabold hover:border-brand hover:text-brand transition shadow-sm text-center" data-id="{{ $opsi->id }}">
+                <button class="fallacy-choice-btn bg-white border border-slate-100 py-6 rounded-2xl text-slate-700 font-extrabold hover:border-brand hover:text-brand transition shadow-sm text-center" data-id="{{ $opsi->id_item_fallacy }}">
                     {{ $opsi->jenis_kesalahan }}
                 </button>
             @endforeach

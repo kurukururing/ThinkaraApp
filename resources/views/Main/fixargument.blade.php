@@ -36,7 +36,7 @@
                 @if(isset($items) && $items->count() > 0)
                     @foreach($items as $item)
                         {{-- Koreksi: Menggunakan $item->id sebagai primary key dan menambahkan class 'choice-item' untuk JS --}}
-                        <div class="choice-item border border-slate-200 rounded-xl px-4 py-2 text-[11px] font-bold text-slate-500 cursor-pointer hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors shadow-sm" data-id="{{ $item->id }}">{{ $item->isi_item }}</div>
+                        <div class="choice-item border border-slate-200 rounded-xl px-4 py-2 text-[11px] font-bold text-slate-500 cursor-pointer hover:border-[#7c3aed] hover:text-[#7c3aed] transition-colors shadow-sm" data-id="{{ $item->id_item_builder }}">{{ $item->isi_item }}</div>
                     @endforeach
                 @else
                     <p class="text-xs font-bold text-slate-400">Pilihan jawaban belum diatur untuk soal ini.</p>
