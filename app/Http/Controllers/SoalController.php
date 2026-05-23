@@ -139,7 +139,7 @@ class SoalController extends Controller
         if (auth()->check()) {
             // TODO: Tambahkan logika penambahan XP/Skor ke user
             // Contoh: auth()->user()->mahasiswa->increment('skor', 10);
-            \App\Models\HasilSesiLatihan::create([ // simpan pada tabel hasil_sesi_latihan
+            HasilSesiLatihan::create([ // simpan pada tabel hasil_sesi_latihan
                 'id_akun'      => auth()->user()->id_akun, 
                 'id_latihan'   => $soal->id_latihan,
                 'xp'           => $xpDidapat, 
@@ -189,8 +189,25 @@ class SoalController extends Controller
         }
 
         $isCorrect = (bool) $jawabanUser->is_correct;
-
+        
         // TODO: Tambahkan kalkulasi dan penyimpanan Skor/XP ke profil user di sini
+        // Hitung skor & xp
+        $skorDidapat = $isCorrect ? 400 : 100; // Skor dan XP lebih rendah untuk jawaban yang salah
+        $xpDidapat   = $isCorrect ? 100 : 25; 
+        $durasi    = $request->input('durasiFallacyFinder', null); // Durasi dalam detik
+
+        if (auth()->check()) {
+            // TODO: Tambahkan logika penambahan XP/Skor ke user
+            // Contoh: auth()->user()->mahasiswa->increment('skor', 10);
+            HasilSesiLatihan::create([ // simpan pada tabel hasil_sesi_latihan
+                'id_akun'      => auth()->user()->id_akun, 
+                'id_latihan'   => $soal->id_latihan,
+                'xp'           => $xpDidapat, 
+                'skor'         => $skorDidapat, 
+                'waktu_main'   => now(),
+                'durasi'       => $durasi,
+            ]);
+        }
         
         // Simpan hasil ke session flash
         session()->flash('pembahasan_data', [

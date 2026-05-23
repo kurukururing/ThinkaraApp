@@ -198,13 +198,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (submitBtn) {
             submitBtn.addEventListener('click', function () {
                 const answerIds = Array.from(dropZones).map(zone => zone.querySelector('.choice-item')?.dataset.id).filter(id => id);
-                const catatDurasiArgumentBuilder = Date.now();
 
                 if (answerIds.length < dropZones.length) return alert('Harap isi semua bagian argumen sebelum mengirim.');
 
-                // 2. Hitung durasi pengerjaan, waktu sekarang - waktu mulai (milidetik dibagi 1000 = detik)
+                // Hitung durasi pengerjaan, waktu sekarang - waktu mulai (milidetik dibagi 1000 = detik)
                 const endTime = Date.now();
-                const durationInSeconds = Math.round((endTime - catatDurasiArgumentBuilder) / 1000);
+                const durationInSeconds = Math.round((endTime - startTimeArgumentBuilder) / 1000);
 
                 fetch(`/argumentbuilder/${soalId}`, {
                     method: 'POST',
@@ -225,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const pilihanContainer = document.getElementById('pilihan-ganda-container');
         const submitBtn = document.getElementById('kirim-fallacy-finder');
         const soalId = fallacyFinderPage.dataset.soalId;
+        const startTimeFallacyFinder = Date.now();
         let selectedAnswerId = null;
 
         // Fungsi untuk memilih jawaban
@@ -251,6 +251,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // Hitung durasi pengerjaan, waktu sekarang - waktu mulai (milidetik dibagi 1000 = detik)
+            const endTime = Date.now();
+            const durationInSeconds = Math.round((endTime - startTimeFallacyFinder) / 1000);
+
             fetch(`/fallacyfinder/${soalId}`, {
                 method: 'POST',
                 headers: {
@@ -258,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ id_item_fallacy: selectedAnswerId })
+                body: JSON.stringify({ id_item_fallacy: selectedAnswerId, durasiFallacyFinder: durationInSeconds })
             })
             .then(response => response.json())
             .then(data => {
