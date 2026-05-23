@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const perbaikanContainer = document.getElementById('area-perbaikan-container');
         const submitBtn = document.getElementById('kirim-fix-argument');
         const soalId = fixArgumentPage.dataset.soalId;
+        const startTimeFixArgument = Date.now();
 
         const choiceItems = document.querySelectorAll('.choice-item');
         
@@ -104,6 +105,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // Hitung durasi
+            const endTime = Date.now();
+            const durationInSeconds = Math.round((endTime - startTimeFixArgument) / 1000);
+
             fetch(`/fixargument/${soalId}`, {
                 method: 'POST',
                 headers: {
@@ -111,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ jawaban_items: answerIds })
+                body: JSON.stringify({ jawaban_items: answerIds, durasiFix: durationInSeconds })
             })
             .then(response => response.json())
             .then(data => {
@@ -284,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const dropZones = document.querySelectorAll('.qte-drop-zone');
         const submitBtn = document.getElementById('kirim-gamified-qte');
         const soalId = gamifiedQtePage.dataset.soalId;
+        const startTimeGamifiedQte = Date.now();
 
         const choiceItems = document.querySelectorAll('.qte-choice-item');
         
@@ -342,11 +348,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
                 const selectedQteAnswerId = answerItem.dataset.id;
+                
+                // Hitung durasi
+                const endTime = Date.now();
+                const durationInSeconds = Math.round((endTime - startTimeGamifiedQte) / 1000);
 
                 fetch(`/gamifiedqte/${soalId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
-                    body: JSON.stringify({ id_item_qte: selectedQteAnswerId })
+                    body: JSON.stringify({ id_item_qte: selectedQteAnswerId, durasiQte: durationInSeconds })
                 }).then(res => res.json()).then(data => {
                     if (data.redirect_url) {
                         window.location.href = data.redirect_url;

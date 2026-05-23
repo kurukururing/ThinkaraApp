@@ -23,7 +23,7 @@ class SoalController extends Controller
             // Redirect atau tampilkan pesan jika tidak ada soal yang valid
             return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
         }
-        
+
         // Mengambil pilihan jawaban yang berelasi dengan soal tersebut (pastikan hanya 1 dari tiap tipe)
         $items = SoalItemBuilder::where('id_soal', $soal->id_soal)
             ->where('is_correct', true)
@@ -31,7 +31,7 @@ class SoalController extends Controller
             ->unique('tipe') // Filter aman dari data ganda di database
             ->values()
             ->shuffle(); // Acak posisinya (di memory)
-        
+
         return view('main.fixargument', compact('soal', 'items'));
     }
 
@@ -46,14 +46,14 @@ class SoalController extends Controller
         if (!$soal) {
             return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
         }
-        
+
         $items = SoalItemBuilder::where('id_soal', $soal->id_soal)
             ->where('is_correct', true)
             ->get()
             ->unique('tipe')
             ->values()
             ->shuffle();
-        
+
         return view('main.argumentbuilder', compact('soal', 'items'));
     }
 
@@ -68,7 +68,7 @@ class SoalController extends Controller
         if (!$soal) {
             return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
         }
-        
+
         // Mengambil pilihan jawaban fallacy yang berelasi dengan soal tersebut
         $opsiFallacy = SoalItemFallacy::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
 
@@ -86,7 +86,7 @@ class SoalController extends Controller
         if (!$soal) {
             return redirect()->route('arena')->with('error', 'Belum ada soal untuk mode ini.');
         }
-        
+
         $opsiQte = SoalItemQte::where('id_soal', $soal->id_soal)->inRandomOrder()->get();
 
         return view('main.gamifiedqte', compact('soal', 'opsiQte'));
@@ -100,7 +100,7 @@ class SoalController extends Controller
         $soal = Soal::findOrFail($id);
 
         $request->validate([
-            'jawaban_items'   => 'required|array',
+            'jawaban_items' => 'required|array',
             'jawaban_items.*' => 'integer',
         ]);
 
@@ -110,7 +110,7 @@ class SoalController extends Controller
             ->get()
             ->unique('tipe')
             ->values();
-        
+
         // Urutkan kunci jawaban berdasarkan hierarki argumentasi:
         // Claim -> Evidence -> Reasoning -> Reference
         $urutanArgumen = ['claim', 'evidence', 'reasoning', 'reference'];
@@ -120,51 +120,57 @@ class SoalController extends Controller
 
         // Ambil array ID-nya saja dan re-index array-nya mulai dari 0
         $correctItems = $correctItemsList->pluck('id_item_builder')->values()->toArray();
-        
+
         // Parsing input jawaban user ke Integer untuk akurasi saat perbandingan
         $userAnswers = array_map('intval', $request->jawaban_items);
-        
+
         // Mengevaluasi kecocokan ID item dan posisi/urutannya di waktu bersamaan
         $correctCount = count(array_intersect_assoc($correctItems, $userAnswers));
         $totalCorrect = count($correctItems);
-        
+
         // Mengecek apakah urutan jawaban user persis sama dengan kunci jawaban
         $isAllCorrect = ($userAnswers === $correctItems);
-        
+
+
+        // Membedakan tipe data pembahasan secara spesifik berdasarkan rute (Fix Argument / Argument Builder)
+        $type = $request->routeIs('fixargument.process') ? 'fixargument' : 'argumentbuilder';
+
+        if($type === 'fixargument'){
+            $durasi = $request->input('durasiFix', null); // Durasi sesi fix argument dalam detik
+        } else{
+            $durasi = $request->input('durasiBuilder', null); // Durasi sesi argument builder dalam detik
+        };
+
         // Hitung skor & xp
-        $skorDidapat = $isAllCorrect ? 400 : ($correctCount * 100); 
-        $xpDidapat   = $isAllCorrect ? 100 : ($correctCount * 25);
-        $durasi    = $request->input('durasiBuilder', null); // Durasi dalam detik
+        $skorDidapat = $isAllCorrect ? 400 : max(50, $correctCount * 100);
+        $xpDidapat = $isAllCorrect ? 100 : max(12, $correctCount * 25);
 
         if (auth()->check()) {
             // TODO: Tambahkan logika penambahan XP/Skor ke user
             // Contoh: auth()->user()->mahasiswa->increment('skor', 10);
             HasilSesiLatihan::create([ // simpan pada tabel hasil_sesi_latihan
-                'id_akun'      => auth()->user()->id_akun, 
-                'id_latihan'   => $soal->id_latihan,
-                'xp'           => $xpDidapat, 
-                'skor'         => $skorDidapat, 
-                'waktu_main'   => now(),
-                'durasi'       => $durasi,
+                'id_akun' => auth()->user()->id_akun,
+                'id_latihan' => $soal->id_latihan,
+                'xp' => $xpDidapat,
+                'skor' => $skorDidapat,
+                'waktu_main' => now(),
+                'durasi' => $durasi,
             ]);
         }
-        
-        // Membedakan tipe data pembahasan secara spesifik berdasarkan rute (Fix Argument / Argument Builder)
-        $type = $request->routeIs('fixargument.process') ? 'fixargument' : 'argumentbuilder';
 
         // Simpan hasil ke session flash untuk ditampilkan di halaman Pembahasan
         session()->flash('pembahasan_data', [
-            'type'          => $type,
-            'is_correct'    => $isAllCorrect,
+            'type' => $type,
+            'is_correct' => $isAllCorrect,
             'correct_count' => $correctCount,
             'total_correct' => $totalCorrect,
-            'message'       => $isAllCorrect ? 'Tepat sekali! Susunan argumen sudah benar.' : "Masih ada bagian yang kurang tepat ($correctCount dari $totalCorrect posisi benar). Coba perbaiki lagi!"
+            'message' => $isAllCorrect ? 'Tepat sekali! Susunan argumen sudah benar.' : "Masih ada bagian yang kurang tepat ($correctCount dari $totalCorrect posisi benar). Coba perbaiki lagi!"
         ]);
 
         // Kirimkan response berupa URL tujuan (halaman pembahasan)
         return response()->json([
-            'success'       => true,
-            'redirect_url'  => route('pembahasan', $id)
+            'success' => true,
+            'redirect_url' => route('pembahasan', $id)
         ]);
     }
 
@@ -181,43 +187,43 @@ class SoalController extends Controller
 
         // Cari item fallacy yang dipilih oleh user
         $jawabanUser = SoalItemFallacy::where('id_item_fallacy', $request->id_item_fallacy)
-                                      ->where('id_soal', $soal->id_soal)
-                                      ->first();
+            ->where('id_soal', $soal->id_soal)
+            ->first();
 
         if (!$jawabanUser) {
             return response()->json(['success' => false, 'message' => 'Jawaban tidak valid.'], 422);
         }
 
         $isCorrect = (bool) $jawabanUser->is_correct;
-        
+
         // TODO: Tambahkan kalkulasi dan penyimpanan Skor/XP ke profil user di sini
         // Hitung skor & xp
         $skorDidapat = $isCorrect ? 400 : 100; // Skor dan XP lebih rendah untuk jawaban yang salah
-        $xpDidapat   = $isCorrect ? 100 : 25; 
-        $durasi    = $request->input('durasiFallacyFinder', null); // Durasi dalam detik
+        $xpDidapat = $isCorrect ? 100 : 25;
+        $durasi = $request->input('durasiFallacyFinder', null); // Durasi sesi fallacy finderdalam detik
 
         if (auth()->check()) {
             // TODO: Tambahkan logika penambahan XP/Skor ke user
             // Contoh: auth()->user()->mahasiswa->increment('skor', 10);
             HasilSesiLatihan::create([ // simpan pada tabel hasil_sesi_latihan
-                'id_akun'      => auth()->user()->id_akun, 
-                'id_latihan'   => $soal->id_latihan,
-                'xp'           => $xpDidapat, 
-                'skor'         => $skorDidapat, 
-                'waktu_main'   => now(),
-                'durasi'       => $durasi,
+                'id_akun' => auth()->user()->id_akun,
+                'id_latihan' => $soal->id_latihan,
+                'xp' => $xpDidapat,
+                'skor' => $skorDidapat,
+                'waktu_main' => now(),
+                'durasi' => $durasi,
             ]);
         }
-        
+
         // Simpan hasil ke session flash
         session()->flash('pembahasan_data', [
-            'type'       => 'fallacy',
+            'type' => 'fallacy',
             'is_correct' => $isCorrect,
-            'message'    => $isCorrect ? 'Analisis tajam! Anda menemukan cacat logikanya.' : 'Tebakan fallacy Anda masih keliru, coba lagi!'
+            'message' => $isCorrect ? 'Analisis tajam! Anda menemukan cacat logikanya.' : 'Tebakan fallacy Anda masih keliru, coba lagi!'
         ]);
 
         return response()->json([
-            'success'    => true,
+            'success' => true,
             'redirect_url' => route('pembahasan', $id)
         ]);
     }
@@ -234,8 +240,8 @@ class SoalController extends Controller
         ]);
 
         $jawabanUser = SoalItemQte::where('id_item_qte', $request->id_item_qte)
-                                  ->where('id_soal', $soal->id_soal)
-                                  ->first();
+            ->where('id_soal', $soal->id_soal)
+            ->first();
 
         if (!$jawabanUser) {
             return response()->json(['success' => false, 'message' => 'Jawaban tidak valid.'], 422);
@@ -243,14 +249,32 @@ class SoalController extends Controller
 
         $isCorrect = (bool) $jawabanUser->is_correct;
 
+        // hitung xp dan skor
+        $skorDidapat = $isCorrect ? 400 : 100;
+        $xpDidapat = $isCorrect ? 100 : 25;
+        $durasi = $request->input('durasiQte', null);
+
+        if (auth()->check()) {
+            // TODO: Tambahkan logika penambahan XP/Skor ke user
+            // Contoh: auth()->user()->mahasiswa->increment('skor', 10);
+            HasilSesiLatihan::create([ // simpan pada tabel hasil_sesi_latihan
+                'id_akun' => auth()->user()->id_akun,
+                'id_latihan' => $soal->id_latihan,
+                'xp' => $xpDidapat,
+                'skor' => $skorDidapat,
+                'waktu_main' => now(),
+                'durasi' => $durasi,
+            ]);
+        }
+
         session()->flash('pembahasan_data', [
-            'type'       => 'qte',
+            'type' => 'qte',
             'is_correct' => $isCorrect,
-            'message'    => $isCorrect ? 'Cepat dan Tepat! Analisis Anda akurat.' : 'Sayang sekali, reaksi atau jawaban Anda kurang tepat!'
+            'message' => $isCorrect ? 'Cepat dan Tepat! Analisis Anda akurat.' : 'Sayang sekali, reaksi atau jawaban Anda kurang tepat!'
         ]);
 
         return response()->json([
-            'success'      => true,
+            'success' => true,
             'redirect_url' => route('pembahasan', $id)
         ]);
     }
@@ -277,7 +301,7 @@ class SoalController extends Controller
                 ->where('is_correct', true)
                 ->get()
                 ->unique('tipe'); // Memastikan hanya ada 4 jawaban (1 dari tiap tipe)
-                
+
             $urutanArgumen = ['claim', 'evidence', 'reasoning', 'reference'];
             $kunciBuilder = $kunciBuilder->sortBy(function ($item) use ($urutanArgumen) {
                 return array_search($item->tipe, $urutanArgumen);
