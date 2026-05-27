@@ -141,7 +141,7 @@
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kategori / ID Latihan <span class="text-red-500">*</span></label>
-                        <select name="id_latihan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700" required>
+                        <select name="id_latihan" id="add_id_latihan" onchange="renderDynamicFields('add')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700" required>
                             <option value="">Pilih Latihan</option>
                             <option value="1">1 - Argument Builder</option>
                             <option value="2">2 - Fallacy Finder</option>
@@ -162,6 +162,10 @@
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Penjelasan (Opsional)</label>
                     <textarea name="penjelasan" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700" placeholder="Tambahkan penjelasan jawaban benar di sini..."></textarea>
                 </div>
+
+                <!-- Dynamic Fields -->
+                <div id="add_dynamic_fields" class="mt-4 border-t border-slate-100 pt-4 space-y-4"></div>
+
                 <div class="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
                     <button type="button" onclick="closeModal('addModal')" class="px-6 py-2.5 rounded-xl text-slate-600 font-bold hover:bg-slate-100 transition-colors">Batal</button>
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-[#7c3aed] text-white font-bold hover:bg-[#6d28d9] transition-all shadow-md shadow-[#7c3aed]/20 hover:-translate-y-0.5">Simpan Soal</button>
@@ -186,7 +190,7 @@
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kategori / ID Latihan <span class="text-red-500">*</span></label>
-                        <select name="id_latihan" id="edit_id_latihan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700" required>
+                        <select name="id_latihan" id="edit_id_latihan" onchange="renderDynamicFields('edit')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700" required>
                             <option value="1">1 - Argument Builder</option>
                             <option value="2">2 - Fallacy Finder</option>
                             <option value="3">3 - Fix The Argument</option>
@@ -206,6 +210,10 @@
                     <label class="block text-sm font-semibold text-slate-700 mb-1.5">Penjelasan (Opsional)</label>
                     <textarea name="penjelasan" id="edit_penjelasan" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700"></textarea>
                 </div>
+
+                <!-- Dynamic Fields -->
+                <div id="edit_dynamic_fields" class="mt-4 border-t border-slate-100 pt-4 space-y-4"></div>
+
                 <div class="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
                     <button type="button" onclick="closeModal('editModal')" class="px-6 py-2.5 rounded-xl text-slate-600 font-bold hover:bg-slate-100 transition-colors">Batal</button>
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-[#7c3aed] text-white font-bold hover:bg-[#6d28d9] transition-all shadow-md shadow-[#7c3aed]/20 hover:-translate-y-0.5">Simpan Perubahan</button>
@@ -256,6 +264,60 @@
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
+        function renderDynamicFields(type, data = null) {
+            const latihanId = document.getElementById(`${type}_id_latihan`).value;
+            const container = document.getElementById(`${type}_dynamic_fields`);
+            container.innerHTML = '';
+            
+            if (!latihanId) return;
+
+            let html = '<h4 class="text-sm font-bold text-slate-800 mb-2">Pengaturan Jawaban Benar</h4>';
+            const inputClass = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700 text-sm";
+            
+            if (latihanId == '1' || latihanId == '3') {
+                const claim = data?.builder_claim || '';
+                const evidence = data?.builder_evidence || '';
+                const reasoning = data?.builder_reasoning || '';
+                const reference = data?.builder_reference || '';
+
+                html += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Claim (Klaim)</label><input type="text" name="builder_claim" value="${claim}" class="${inputClass}" required></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Evidence (Bukti)</label><input type="text" name="builder_evidence" value="${evidence}" class="${inputClass}" required></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Reasoning (Alasan)</label><input type="text" name="builder_reasoning" value="${reasoning}" class="${inputClass}" required></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 mb-1">Reference (Referensi)</label><input type="text" name="builder_reference" value="${reference}" class="${inputClass}" required></div>
+                    </div>
+                `;
+            } else if (latihanId == '2') {
+                const fallacies = ['Ad Hominem', 'Slippery Slope', 'Strawman', 'False Dilemma', 'Appeal to Emotion', 'Bandwagon', 'Hasty Generalization'];
+                let options = '';
+                const selected = data?.fallacy_correct || '';
+                fallacies.forEach(f => {
+                    options += `<option value="${f}" ${selected === f ? 'selected' : ''}>${f}</option>`;
+                });
+                html += `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kesalahan Logika (Jawaban Benar)</label>
+                        <select name="fallacy_correct" class="${inputClass}" required><option value="">Pilih Fallacy</option>${options}</select>
+                        <p class="text-[11px] text-slate-500 mt-1">* 3 Pilihan salah akan dibuat secara otomatis secara acak.</p>
+                    </div>
+                `;
+            } else if (latihanId == '4') {
+                const qteOptions = ['Argumen Logis dan Valid', 'Terdapat Kesalahan Logika (Fallacy)'];
+                let options = '';
+                const selected = data?.qte_correct || '';
+                qteOptions.forEach(o => { options += `<option value="${o}" ${selected === o ? 'selected' : ''}>${o}</option>`; });
+                html += `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status Argumen (Jawaban Benar)</label>
+                        <select name="qte_correct" class="${inputClass}" required><option value="">Pilih Status</option>${options}</select>
+                        <p class="text-[11px] text-slate-500 mt-1">* Pilihan salah akan diatur otomatis sebagai opsi sebaliknya.</p>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
         // Mengisi data modal Edit
         function editSoal(item) {
             openModal('editModal');
@@ -267,6 +329,27 @@
             document.getElementById('edit_topik').value = item.topik;
             document.getElementById('edit_isi_soal').value = item.isi_soal;
             document.getElementById('edit_penjelasan').value = item.penjelasan || '';
+            
+            let answersData = {};
+            if (item.id_latihan == 1 || item.id_latihan == 3) {
+                if (item.builder_items) {
+                    item.builder_items.forEach(i => {
+                        if (i.is_correct) answersData[`builder_${i.tipe}`] = i.isi_item;
+                    });
+                }
+            } else if (item.id_latihan == 2) {
+                if (item.fallacy_items) {
+                    const correct = item.fallacy_items.find(i => i.is_correct);
+                    if (correct) answersData.fallacy_correct = correct.jenis_kesalahan;
+                }
+            } else if (item.id_latihan == 4) {
+                if (item.qte_items) {
+                    const correct = item.qte_items.find(i => i.is_correct);
+                    if (correct) answersData.qte_correct = correct.isi_item;
+                }
+            }
+
+            renderDynamicFields('edit', answersData);
         }
 
         // Merakit data form Hapus

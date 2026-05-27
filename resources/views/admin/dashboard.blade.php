@@ -7,6 +7,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Load icon modern dari Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-[#F8F9FE] text-slate-800 font-sans antialiased flex h-screen overflow-hidden">
     
@@ -118,12 +119,151 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Chart Area -->
+            <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm mb-10">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-black text-slate-800">Aktivitas Latihan (7 Hari Terakhir)</h3>
+                        <p class="text-sm font-semibold text-slate-500">Statistik jumlah sesi latihan yang diselesaikan oleh mahasiswa setiap harinya.</p>
+                    </div>
+                </div>
+                <div class="h-80">
+                    <canvas id="aktivitasChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Additional Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-black text-slate-800">Distribusi Kategori Latihan</h3>
+                        <p class="text-sm font-semibold text-slate-500">Komposisi pengerjaan berdasarkan jenis latihan.</p>
+                    </div>
+                    <div class="h-64 relative flex justify-center">
+                        <canvas id="kategoriSesiChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-black text-slate-800">Top 5 Instansi</h3>
+                        <p class="text-sm font-semibold text-slate-500">Asal instansi dengan pengguna terbanyak.</p>
+                    </div>
+                    <div class="h-64 relative">
+                        <canvas id="instansiChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
     <!-- Inisialisasi Icon -->
     <script>
         lucide.createIcons();
+
+        const ctx = document.getElementById('aktivitasChart').getContext('2d');
+        const labels = {!! $statistikSesi->pluck('tanggal')->toJson() !!};
+        const data = {!! $statistikSesi->pluck('total')->toJson() !!};
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Sesi Latihan',
+                    data: data,
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#7c3aed',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { family: 'inherit' },
+                            color: '#94a3b8'
+                        },
+                        grid: { color: '#f1f5f9', drawBorder: false }
+                    },
+                    x: {
+                        ticks: {
+                            font: { family: 'inherit' },
+                            color: '#94a3b8'
+                        },
+                        grid: { display: false, drawBorder: false }
+                    }
+                },
+                interaction: { intersect: false, mode: 'index' },
+            }
+        });
+
+        // Doughnut Chart: Distribusi Kategori Latihan
+        const ctxKategori = document.getElementById('kategoriSesiChart').getContext('2d');
+        const labelKategori = {!! $distribusiSesi->keys()->toJson() !!};
+        const dataKategori = {!! $distribusiSesi->values()->toJson() !!};
+
+        new Chart(ctxKategori, {
+            type: 'doughnut',
+            data: {
+                labels: labelKategori,
+                datasets: [{
+                    data: dataKategori,
+                    backgroundColor: ['#7c3aed', '#d946ef', '#3b82f6', '#f97316', '#10b981'],
+                    borderWidth: 0,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { family: 'inherit' }, usePointStyle: true, padding: 20 } }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // Bar Chart: Top 5 Instansi
+        const ctxInstansi = document.getElementById('instansiChart').getContext('2d');
+        const labelInstansi = {!! $distribusiInstansi->keys()->toJson() !!};
+        const dataInstansi = {!! $distribusiInstansi->values()->toJson() !!};
+
+        new Chart(ctxInstansi, {
+            type: 'bar',
+            data: {
+                labels: labelInstansi,
+                datasets: [{
+                    label: 'Jumlah Pengguna',
+                    data: dataInstansi,
+                    backgroundColor: 'rgba(59, 130, 246, 0.85)',
+                    borderRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false }, ticks: { stepSize: 1, font: {family: 'inherit'}, color: '#94a3b8' } },
+                    x: { grid: { display: false, drawBorder: false }, ticks: { font: {family: 'inherit'}, color: '#94a3b8' } }
+                }
+            }
+        });
     </script>
 </body>
 </html>
