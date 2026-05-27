@@ -29,6 +29,11 @@ class AuthController extends Controller
             
             $request->session()->regenerate();
 
+            // Cek jika yang login adalah admin, arahkan ke panel admin
+            if ($akun->user_role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');
+            }
+
             return redirect()->to('/dashboard')->with('success', 'Selamat datang kembali!');
         }
 

@@ -20,6 +20,7 @@ class Soal extends Model
         'id_latihan',
         'topik',
         'isi_soal',
+        'penjelasan',
     ];
 
     /**

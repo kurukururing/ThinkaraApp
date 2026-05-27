@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SoalController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Auth;
 
 // =========================================================================
@@ -71,4 +72,16 @@ Route::middleware(['auth'])->group(function () {
 
     // Rute Halaman Pembahasan
     Route::get('/pembahasan/{id}', [SoalController::class, 'getPembahasan'])->name('pembahasan');
+});
+
+// =========================================================================
+// 4. HALAMAN ADMIN
+// =========================================================================
+Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');
+    Route::get('/soal', [AdminController::class, 'soal'])->name('soal');
+    Route::post('/soal', [AdminController::class, 'storeSoal'])->name('soal.store');
+    Route::put('/soal/{id}', [AdminController::class, 'updateSoal'])->name('soal.update');
+    Route::delete('/soal/{id}', [AdminController::class, 'destroySoal'])->name('soal.destroy');
 });
