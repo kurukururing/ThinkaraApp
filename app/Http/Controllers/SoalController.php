@@ -164,7 +164,10 @@ class SoalController extends Controller
             'is_correct' => $isAllCorrect,
             'correct_count' => $correctCount,
             'total_correct' => $totalCorrect,
-            'message' => $isAllCorrect ? 'Tepat sekali! Susunan argumen sudah benar.' : "Masih ada bagian yang kurang tepat ($correctCount dari $totalCorrect posisi benar). Coba perbaiki lagi!"
+            'message' => $isAllCorrect ? 'Tepat sekali! Susunan argumen sudah benar.' : "Masih ada bagian yang kurang tepat ($correctCount dari $totalCorrect posisi benar). Coba perbaiki lagi!",
+            'skor' => $skorDidapat,
+            'xp' => $xpDidapat,
+            'durasi' => $durasi,
         ]);
 
         // Kirimkan response berupa URL tujuan (halaman pembahasan)
@@ -219,7 +222,10 @@ class SoalController extends Controller
         session()->flash('pembahasan_data', [
             'type' => 'fallacy',
             'is_correct' => $isCorrect,
-            'message' => $isCorrect ? 'Analisis tajam! Anda menemukan cacat logikanya.' : 'Tebakan fallacy Anda masih keliru, coba lagi!'
+            'message' => $isCorrect ? 'Analisis tajam! Anda menemukan cacat logikanya.' : 'Tebakan fallacy Anda masih keliru, coba lagi!',
+            'skor' => $skorDidapat,
+            'xp' => $xpDidapat,
+            'durasi' => $durasi,
         ]);
 
         return response()->json([
@@ -270,7 +276,10 @@ class SoalController extends Controller
         session()->flash('pembahasan_data', [
             'type' => 'qte',
             'is_correct' => $isCorrect,
-            'message' => $isCorrect ? 'Cepat dan Tepat! Analisis Anda akurat.' : 'Sayang sekali, reaksi atau jawaban Anda kurang tepat!'
+            'message' => $isCorrect ? 'Cepat dan Tepat! Analisis Anda akurat.' : 'Sayang sekali, reaksi atau jawaban Anda kurang tepat!',
+            'skor' => $skorDidapat,
+            'xp' => $xpDidapat,
+            'durasi' => $durasi,
         ]);
 
         return response()->json([

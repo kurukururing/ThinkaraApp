@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\Akun;
 use App\Models\Mahasiswa;
+use App\Models\HasilSesiLatihan;
 
 class MahasiswaController extends Controller
 {
@@ -16,9 +17,11 @@ class MahasiswaController extends Controller
      */
     public function dashboard()
     {
-        // Data yang dibutuhkan di dashboard bisa dipersiapkan di sini
-        // Contoh: $user = Auth::user();
-        return view('main.dashboard');
+        $akun = Auth::user();
+        $totalXp = HasilSesiLatihan::where('id_akun', $akun->id_akun)->sum('xp');
+        $totalSkor = HasilSesiLatihan::where('id_akun', $akun->id_akun)->sum('skor');
+
+        return view('main.dashboard', compact('totalXp', 'totalSkor'));
     }
 
     /**
@@ -98,5 +101,35 @@ class MahasiswaController extends Controller
         $riwayat = []; // Placeholder
 
         return view('main.riwayat', compact('riwayat'));
+    }
+
+    /**
+     * Menampilkan halaman leaderboard (peringkat) berdasarkan akumulasi skor dan xp.
+     */
+    public function leaderboard()
+    {
+        $leaderboard = Mahasiswa::join('hasil_sesi_latihan', 'mahasiswa.id_akun', '=', 'hasil_sesi_latihan.id_akun')
+            ->select('mahasiswa.id_akun', 'mahasiswa.id_mahasiswa', 'mahasiswa.nama_mahasiswa', 'mahasiswa.instansi')
+            ->selectRaw('SUM(hasil_sesi_latihan.skor) as total_skor, SUM(hasil_sesi_latihan.xp) as total_xp')
+            ->groupBy('mahasiswa.id_akun', 'mahasiswa.id_mahasiswa', 'mahasiswa.nama_mahasiswa', 'mahasiswa.instansi')
+            ->orderBy('total_skor', 'desc')
+            ->orderBy('total_xp', 'desc')
+            ->get();
+
+        $currentUserRank = null;
+        $currentUserData = null;
+        
+        if (Auth::check()) {
+            $currentUserId = Auth::user()->id_akun;
+            foreach ($leaderboard as $index => $user) {
+                if ($user->id_akun == $currentUserId) {
+                    $currentUserRank = $index + 1;
+                    $currentUserData = $user;
+                    break;
+                }
+            }
+        }
+
+        return view('main.peringkat', compact('leaderboard', 'currentUserRank', 'currentUserData'));
     }
 }

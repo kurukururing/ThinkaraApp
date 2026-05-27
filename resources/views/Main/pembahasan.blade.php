@@ -15,6 +15,28 @@
                     {{ $pembahasanData['is_correct'] ? 'Berhasil!' : 'Belum Tepat!' }}
                 </h1>
                 <p class="mt-4 text-lg font-medium text-slate-700">{{ $pembahasanData['message'] }}</p>
+                
+                <!-- Skor, XP, Durasi -->
+                <div class="mt-6 flex flex-wrap justify-center gap-4">
+                    <div class="bg-white px-6 py-3 rounded-xl border {{ $pembahasanData['is_correct'] ? 'border-green-200 text-green-700' : 'border-red-200 text-red-700' }} shadow-sm flex flex-col items-center">
+                        <span class="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">Skor Didapat</span>
+                        <span class="text-xl font-black">+{{ $pembahasanData['skor'] ?? 0 }}</span>
+                    </div>
+                    <div class="bg-white px-6 py-3 rounded-xl border {{ $pembahasanData['is_correct'] ? 'border-green-200 text-green-700' : 'border-red-200 text-red-700' }} shadow-sm flex flex-col items-center">
+                        <span class="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">XP Didapat</span>
+                        <span class="text-xl font-black">+{{ $pembahasanData['xp'] ?? 0 }}</span>
+                    </div>
+                    <div class="bg-white px-6 py-3 rounded-xl border {{ $pembahasanData['is_correct'] ? 'border-green-200 text-green-700' : 'border-red-200 text-red-700' }} shadow-sm flex flex-col items-center">
+                        <span class="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">Durasi</span>
+                        <span class="text-xl font-black">
+                            @if(isset($pembahasanData['durasi']) && $pembahasanData['durasi'] >= 60)
+                                {{ floor($pembahasanData['durasi'] / 60) }}m {{ $pembahasanData['durasi'] % 60 }}s
+                            @else
+                                {{ $pembahasanData['durasi'] ?? 0 }}s
+                            @endif
+                        </span>
+                    </div>
+                </div>
             </div>
             
             <!-- Konten Pembahasan -->

@@ -49,9 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profil/password', [MahasiswaController::class, 'updatePassword'])->name('profil.password.update');
 
     // Rute Fitur Utama
-    Route::get('/leaderboard', function () {
-        return view('main.peringkat');
-    })->name('leaderboard');
+    Route::get('/leaderboard', [MahasiswaController::class, 'leaderboard'])->name('leaderboard');
 
     Route::get('/arena', function () {
         return view('main.arena');
