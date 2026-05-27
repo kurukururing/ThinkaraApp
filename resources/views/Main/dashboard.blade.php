@@ -28,7 +28,7 @@
                 <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-green-500 text-lg">🟢</div>
                 <div>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total XP</p>
-                    <p class="text-lg font-black text-slate-700">0</p>
+                    <p class="text-lg font-black text-slate-700">{{ $totalXp }}</p>
                 </div>
             </div>
             <div class="bg-white p-5 rounded-2xl flex items-center gap-4 border border-slate-100">

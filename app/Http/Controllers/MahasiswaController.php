@@ -93,6 +93,22 @@ class MahasiswaController extends Controller
     }
 
     /**
+     * Memproses penonaktifan akun (soft delete).
+     */
+    public function deleteAkun(Request $request)
+    {
+        $akun = Auth::user();
+        
+        $akun->update(['is_active' => 0]);
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login')->with('success', 'Akun berhasil dinonaktifkan.');
+    }
+
+    /**
      * Menampilkan riwayat latihan spesifik untuk mahasiswa.
      */
     public function riwayatLatihan()

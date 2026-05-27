@@ -380,4 +380,84 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
+
+    // --- Logika Modal Konfirmasi Logout ---
+    const btnLogout = document.getElementById('btn-logout');
+    const formLogout = document.getElementById('form-logout');
+
+    if (btnLogout && formLogout) {
+        btnLogout.addEventListener('click', function () {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Keluar dari Akun?',
+                    text: "Sesi Anda akan diakhiri dan Anda harus login kembali.",
+                    icon: 'question',
+                    iconColor: '#7c3aed', // Warna ungu tema
+                    showCancelButton: true,
+                    confirmButtonColor: '#7c3aed',
+                    cancelButtonColor: '#f1f5f9', // Warna abu-abu terang
+                    confirmButtonText: '<span style="font-weight: 700; color: white;">Ya, Keluar</span>',
+                    cancelButtonText: '<span style="font-weight: 700; color: #475569;">Batal</span>',
+                    reverseButtons: true, // Menukar posisi tombol agar "Ya" ada di kanan
+                    backdrop: `rgba(15, 23, 42, 0.4)`,
+                    customClass: {
+                        popup: 'rounded-3xl border border-slate-100 shadow-md',
+                        title: 'text-lg font-black text-slate-800 pt-2',
+                        htmlContainer: 'text-sm font-semibold text-slate-500',
+                        confirmButton: 'rounded-xl px-6 py-2.5',
+                        cancelButton: 'rounded-xl px-6 py-2.5 border border-slate-200',
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formLogout.submit();
+                    }
+                });
+            } else {
+                // Fallback menggunakan modal bawaan JS
+                if (confirm('Apakah Anda yakin ingin keluar dari aplikasi?')) {
+                    formLogout.submit();
+                }
+            }
+        });
+    }
+
+    // --- Logika Modal Konfirmasi Hapus Akun ---
+    const btnDeleteAkun = document.getElementById('btn-delete-akun');
+    const formDeleteAkun = document.getElementById('form-delete-akun');
+
+    if (btnDeleteAkun && formDeleteAkun) {
+        btnDeleteAkun.addEventListener('click', function () {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Hapus Akun Permanen?',
+                    text: "Semua data latihan akan hilang. Tindakan ini tidak dapat dibatalkan!",
+                    icon: 'warning',
+                    iconColor: '#e11d48', // Warna merah destruktif
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#f1f5f9',
+                    confirmButtonText: '<span style="font-weight: 700; color: white;">Ya, Hapus Akun</span>',
+                    cancelButtonText: '<span style="font-weight: 700; color: #475569;">Batal</span>',
+                    reverseButtons: true,
+                    backdrop: `rgba(15, 23, 42, 0.6)`,
+                    customClass: {
+                        popup: 'rounded-3xl border border-slate-100 shadow-md',
+                        title: 'text-lg font-black text-slate-800 pt-2',
+                        htmlContainer: 'text-sm font-semibold text-slate-500',
+                        confirmButton: 'rounded-xl px-6 py-2.5',
+                        cancelButton: 'rounded-xl px-6 py-2.5 border border-slate-200',
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formDeleteAkun.submit();
+                    }
+                });
+            } else {
+                // Fallback menggunakan modal bawaan JS
+                if (confirm('Peringatan: Apakah Anda yakin ingin menonaktifkan akun ini? Tindakan ini tidak dapat dibatalkan.')) {
+                    formDeleteAkun.submit();
+                }
+            }
+        });
+    }
 })

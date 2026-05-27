@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profil', [MahasiswaController::class, 'profil'])->name('profil');
     Route::post('/profil/update', [MahasiswaController::class, 'updateProfil'])->name('profil.update');
     Route::post('/profil/password', [MahasiswaController::class, 'updatePassword'])->name('profil.password.update');
+    Route::post('/profil/delete', [MahasiswaController::class, 'deleteAkun'])->name('profil.delete');
 
     // Rute Fitur Utama
     Route::get('/leaderboard', [MahasiswaController::class, 'leaderboard'])->name('leaderboard');

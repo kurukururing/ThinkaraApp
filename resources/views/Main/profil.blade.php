@@ -144,19 +144,25 @@
             {{-- Zona Berbahaya --}}
             <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
                 <h3 class="text-lg font-black text-slate-800 mb-5 tracking-tight">Zona Berbahaya</h3>
-                <form action="{{ route('logout') }}" method="POST">
+                <form id="form-logout" action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="w-full bg-[#fff1f2] text-[#e11d48] font-black py-3.5 rounded-xl text-sm flex justify-between items-center px-5 mb-3 border border-[#ffe4e6] hover:bg-[#ffe4e6] transition-all">
+                    <button type="button" id="btn-logout" class="w-full bg-[#fff1f2] text-[#e11d48] font-black py-3.5 rounded-xl text-sm flex justify-between items-center px-5 mb-3 border border-[#ffe4e6] hover:bg-[#ffe4e6] transition-all">
                         Keluar dari Akun 
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     </button>
                 </form>
-                <button class="w-full text-slate-400 font-bold py-2 text-[11px] uppercase tracking-wider text-left px-2 hover:text-[#e11d48] transition-all">
-                    Hapus Akun Permanen
-                </button>
+                <form id="form-delete-akun" action="{{ route('profil.delete') }}" method="POST">
+                    @csrf
+                    <button type="button" id="btn-delete-akun" class="w-full text-slate-400 font-bold py-2 text-[11px] uppercase tracking-wider text-left px-2 hover:text-[#e11d48] transition-all">
+                        Hapus Akun Permanen
+                    </button>
+                </form>
             </div>
 
         </div>
     </div>
 </div>
+
+{{-- Tambahkan CDN SweetAlert2 untuk tampilan modal --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endsection
