@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Akun;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminSeeder extends Seeder
 {
@@ -13,14 +13,16 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // Menggunakan updateOrCreate agar jika akun admin sudah ada, passwordnya akan di-reset (ditimpa) dengan yang benar
-        Akun::updateOrCreate(
+        // Menggunakan updateOrInsert dengan Query Builder untuk menghindari masalah mutator/fillable di model Akun
+        DB::table('akun')->updateOrInsert(
             ['username' => 'admin1'], // Cari akun berdasarkan username 'admin'
             [
                 'email' => 'admin@thinkara.com',
                 'password' => Hash::make('admin1'), // Ini akan mengenkripsi password
                 'user_role' => 'admin',
                 'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         );
     }

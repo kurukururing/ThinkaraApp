@@ -44,8 +44,18 @@ Route::middleware(['auth'])->group(function () {
     // Rute Autentikasi
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    // Rute Dashboard (Redirect based on role)
+    Route::get('/dashboard', function () {
+        $role = Auth::user()->user_role;
+        if ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($role === 'dosen') {
+            return redirect()->route('dosen.dashboard');
+        }
+        return app(\App\Http\Controllers\MahasiswaController::class)->dashboard();
+    })->name('dashboard');
+
     // Rute Mahasiswa & Profil
-    Route::get('/dashboard', [MahasiswaController::class, 'dashboard'])->name('dashboard');
     Route::get('/profil', [MahasiswaController::class, 'profil'])->name('profil');
     Route::post('/profil/update', [MahasiswaController::class, 'updateProfil'])->name('profil.update');
     Route::post('/profil/password', [MahasiswaController::class, 'updatePassword'])->name('profil.password.update');

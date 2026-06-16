@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Akun;
-use App\Models\Mahasiswa;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
+use App\Models\Akun;
+use App\Models\Mahasiswa;
 
 class AuthController extends Controller
 {
-    // Proses Login
+    /**
+     * Memproses permintaan login.
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -19,83 +20,64 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $akun = Akun::where('username', $credentials['username'])
-                    ->where('is_active', 1)
-                    ->first();
-
-        if ($akun && Hash::check($credentials['password'], $akun->password)) {
-            // Login menggunakan guard web secara eksplisit
-            Auth::guard('web')->login($akun);
-            
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            // Cek jika yang login adalah admin, arahkan ke panel admin
-            if ($akun->user_role === 'admin') {
-                return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');
-            }
-
-            // Cek jika yang login adalah dosen, arahkan ke panel dosen
-            if ($akun->user_role === 'dosen') {
-                return redirect()->route('dosen.dashboard')->with('success', 'Selamat datang Dosen!');
-            }
-
-            return redirect()->to('/dashboard')->with('success', 'Selamat datang kembali!');
+            
+            // Pengalihan spesifik role dosen/admin/mahasiswa sudah 
+            // ditangani oleh route /dashboard di web.php
+            return redirect()->intended('dashboard');
         }
 
         return back()->withErrors([
-            'username' => 'Username atau password salah, atau akun dinonaktifkan.',
+            'username' => 'Username atau password yang dimasukkan salah.',
         ])->onlyInput('username');
     }
 
-    // Proses Daftar Akun
+    /**
+     * Memproses pendaftaran akun baru.
+     */
     public function register(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string|unique:akun,username|max:255',
-            'email' => 'required|string|email|unique:akun,email|max:255',
-            'password' => 'required|string|min:6|confirmed',
+        // Validasi input
+        $validated = $request->validate([
+            'username'       => 'required|string|max:255|unique:akun,username',
+            'email'          => 'required|string|email|max:255|unique:akun,email',
+            'password'       => 'required|string|min:6|confirmed',
+            'user_role'      => 'required|in:mahasiswa,dosen',
             
-            'npm' => 'required|string|size:11|unique:mahasiswa,npm',
-            'nama_mahasiswa' => 'required|string|max:255',
-            'jenis_kelamin' => 'required|string|max:20',
-            'jenjang' => 'required|string|max:20',
-            'tanggal_lahir' => 'required|date',
-            'instansi' => 'required|string|max:255',
+            // Kolom nama_mahasiswa hanya wajib diisi jika mendaftar sebagai mahasiswa
+            'nama_mahasiswa' => 'required_if:user_role,mahasiswa|nullable|string|max:255',
         ]);
 
-        $akun = DB::transaction(function () use ($request) {
-            $akunBaru = Akun::create([
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'user_role' => 'mahasiswa',
-                'is_active' => true,
-            ]);
+        // 1. Buat data di tabel akun
+        $akun = Akun::create([
+            'username'  => $validated['username'],
+            'email'     => $validated['email'],
+            'password'  => Hash::make($validated['password']),
+            'user_role' => $validated['user_role'],
+            'is_active' => 1,
+        ]);
 
+        // 2. Jika yang mendaftar adalah mahasiswa, buatkan relasi data di tabel Mahasiswa
+        if ($validated['user_role'] === 'mahasiswa') {
             Mahasiswa::create([
-                'id_akun' => $akunBaru->id_akun,
-                'npm' => $request->npm,
-                'nama_mahasiswa' => $request->nama_mahasiswa,
-                'jenis_kelamin' => $request->jenis_kelamin,
-                'jenjang' => $request->jenjang,
-                'tanggal_lahir' => $request->tanggal_lahir,
-                'instansi' => $request->instansi,
+                'id_akun'        => $akun->id_akun, 
+                'nama_mahasiswa' => $validated['nama_mahasiswa'],
             ]);
+        }
 
-            return $akunBaru;
-        });
+        // Otomatis login setelah pendaftaran berhasil
+        Auth::login($akun);
 
-        // Login menggunakan guard web secara eksplisit
-        Auth::guard('web')->login($akun);
-        $request->session()->regenerate();
-
-        return redirect()->to('/dashboard')->with('success', 'Pendaftaran berhasil!');
+        return redirect()->route('dashboard');
     }
 
-    // Proses Logout
+    /**
+     * Mengeluarkan pengguna dari sesi.
+     */
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

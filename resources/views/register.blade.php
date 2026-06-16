@@ -56,6 +56,14 @@
             <form action="{{ route('register.post') }}" method="POST" class="space-y-6">
                 @csrf
                 
+                <input type="hidden" name="user_role" id="user_role" value="{{ old('user_role', 'mahasiswa') }}">
+
+                {{-- Pilihan Role Pendaftar --}}
+                <div class="flex p-1 bg-slate-100 rounded-xl mb-6" id="role-selector">
+                    <button type="button" id="tab-mahasiswa" onclick="selectRole('mahasiswa')" class="w-1/2 py-2 text-sm font-bold rounded-lg transition-all">Sebagai Mahasiswa</button>
+                    <button type="button" id="tab-dosen" onclick="selectRole('dosen')" class="w-1/2 py-2 text-sm font-bold rounded-lg transition-all">Sebagai Dosen</button>
+                </div>
+
                 {{-- STEP 1: DATA LOGIN AKUN --}}
                 <div id="step1" class="space-y-6">
                     <div>
@@ -81,94 +89,111 @@
                     </button>
                 </div>
 
-                {{-- STEP 2: DATA MAHASISWA --}}
-                <div id="step2" class="space-y-6 hidden">
+                {{-- STEP 2: DATA DIRI MAHASISWA --}}
+                <div id="step2-mahasiswa" class="hidden space-y-6">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Nama Lengkap</label>
-                        <input type="text" name="nama_mahasiswa" value="{{ old('nama_mahasiswa') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama Lengkap pengguna" required>
+                        <input type="text" name="nama_mahasiswa" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama lengkap sesuai KTM">
                     </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">NPM</label>
-                            <input id="npmInput" type="text" name="npm" maxlength="11" value="{{ old('npm') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="11 digit angka" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Jenjang</label>
-                            <input type="text" name="jenjang" value="{{ old('jenjang') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="S1 / D3" required>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Jenis Kelamin</label>
-                            <div class="relative">
-                                <select name="jenis_kelamin" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm appearance-none" required>
-                                    <option value="">Pilih</option>
-                                    <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-slate-400">
-                                    <svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" required>
-                        </div>
-                    </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Instansi / Universitas</label>
-                        <input type="text" name="instansi" value="{{ old('instansi') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama asal universitas" required>
+                        <input type="text" name="instansi_mahasiswa" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Asal kampus Anda">
                     </div>
                     
-                    <div class="flex gap-4 pt-4">
-                        <button type="button" onclick="prevStep()" class="w-1/3 border border-slate-200 text-slate-600 font-bold py-4 rounded-2xl hover:bg-slate-50 active:scale-95 transition-all">
+                    <div class="flex gap-4">
+                        <button type="button" onclick="prevStep()" class="w-1/3 bg-slate-100 text-slate-500 font-extrabold py-4 rounded-2xl hover:bg-slate-200 transition-all mt-6 flex items-center justify-center gap-2">
                             Kembali
                         </button>
-                        {{-- PERBAIKAN: Tombol dipastikan bertipe submit untuk mendaftarkan form --}}
-                        <button type="submit" class="w-2/3 bg-gradient-to-r from-brand to-accent text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-brand/20 hover:scale-[1.01] active:scale-95 transition-all">
-                            Buat Akun Anda
+                        <button type="submit" class="w-2/3 bg-primary text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-6">
+                            Daftar Akun
                         </button>
                     </div>
                 </div>
-                
-                <p class="text-center text-slate-500 text-[13px] pt-4">
+
+                {{-- STEP 2: DATA DIRI DOSEN --}}
+                <div id="step2-dosen" class="hidden space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Nama Lengkap (beserta Gelar)</label>
+                        <input type="text" name="nama_dosen" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama dan gelar akademik">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Instansi / Universitas</label>
+                        <input type="text" name="instansi_dosen" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Tempat Anda mengajar">
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <button type="button" onclick="prevStep()" class="w-1/3 bg-slate-100 text-slate-500 font-extrabold py-4 rounded-2xl hover:bg-slate-200 transition-all mt-6 flex items-center justify-center gap-2">
+                            Kembali
+                        </button>
+                        <button type="submit" class="w-2/3 bg-brand text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-brand/20 hover:scale-[1.02] active:scale-95 transition-all mt-6">
+                            Daftar Akun
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-center text-slate-500 text-[13px] mt-8">
                     Sudah punya akun? <a href="/login" class="text-brand font-bold hover:underline ml-1">Masuk di sini</a>
                 </p>
             </form>
         </div>
     </div>
 
-    {{-- Script Navigasi Form Step --}}
     <script>
-        function nextStep() {
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
+        function selectRole(role) {
+            document.getElementById('user_role').value = role;
             
+            const tabMahasiswa = document.getElementById('tab-mahasiswa');
+            const tabDosen = document.getElementById('tab-dosen');
+
+            if (role === 'mahasiswa') {
+                tabMahasiswa.classList.add('bg-white', 'text-brand', 'shadow-sm');
+                tabMahasiswa.classList.remove('text-slate-500');
+                
+                tabDosen.classList.remove('bg-white', 'text-brand', 'shadow-sm');
+                tabDosen.classList.add('text-slate-500');
+            } else {
+                tabDosen.classList.add('bg-white', 'text-brand', 'shadow-sm');
+                tabDosen.classList.remove('text-slate-500');
+                
+                tabMahasiswa.classList.remove('bg-white', 'text-brand', 'shadow-sm');
+                tabMahasiswa.classList.add('text-slate-500');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            selectRole(document.getElementById('user_role').value);
+        });
+
+        function nextStep() {
+            const role = document.getElementById('user_role').value;
+            
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('role-selector').classList.add('hidden');
+            
+            if (role === 'mahasiswa') {
+                document.getElementById('step2-mahasiswa').classList.remove('hidden');
+            } else {
+                document.getElementById('step2-dosen').classList.remove('hidden');
+            }
+
             document.getElementById('badge-step1').classList.replace('bg-brand', 'bg-slate-100');
             document.getElementById('badge-step1').classList.replace('text-white', 'text-slate-400');
-            
             document.getElementById('badge-step2').classList.replace('bg-slate-100', 'bg-brand');
             document.getElementById('badge-step2').classList.replace('text-slate-400', 'text-white');
         }
 
         function prevStep() {
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('step2-mahasiswa').classList.add('hidden');
+            document.getElementById('step2-dosen').classList.add('hidden');
             
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('role-selector').classList.remove('hidden');
+
             document.getElementById('badge-step2').classList.replace('bg-brand', 'bg-slate-100');
             document.getElementById('badge-step2').classList.replace('text-white', 'text-slate-400');
-            
             document.getElementById('badge-step1').classList.replace('bg-slate-100', 'bg-brand');
             document.getElementById('badge-step1').classList.replace('text-slate-400', 'text-white');
         }
-
-        @if ($errors->has('npm') || $errors->has('nama_mahasiswa') || $errors->has('instansi') || $errors->has('tanggal_lahir'))
-            nextStep();
-        @endif
     </script>
 </body>
 </html>
