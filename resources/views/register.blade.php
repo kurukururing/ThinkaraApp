@@ -68,19 +68,30 @@
                 <div id="step1" class="space-y-6">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Username</label>
-                        <input type="text" name="username" value="{{ old('username') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Username unik" required>
+                        <input type="text" name="username" value="{{ old('username') }}" class="w-full px-5 py-4 rounded-2xl border @error('username') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Username unik" required autofocus>
+                        @error('username') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="nama@email.com" required>
+                        <input type="email" name="email" value="{{ old('email') }}" class="w-full px-5 py-4 rounded-2xl border @error('email') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="nama@email.com" required>
+                        @error('email') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Password</label>
-                        <input type="password" name="password" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Minimal 6 karakter" required>
+                    <div class="relative">
+                        <label for="password" class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Password</label>
+                        <input id="password" type="password" name="password" class="w-full px-5 py-4 rounded-2xl border @error('password') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Minimal 6 karakter" required>
+                        <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 top-7 px-4 text-slate-400 hover:text-brand">
+                            <svg id="eye-icon-password" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <svg id="eye-off-icon-password" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 .847 0 1.67.127 2.456.371M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20"></path></svg>
+                        </button>
+                        @error('password') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Ulangi password" required>
+                    <div class="relative">
+                        <label for="password_confirmation" class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Konfirmasi Password</label>
+                        <input id="password_confirmation" type="password" name="password_confirmation" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Ulangi password" required>
+                        <button type="button" onclick="togglePassword('password_confirmation')" class="absolute inset-y-0 right-0 top-7 px-4 text-slate-400 hover:text-brand">
+                            <svg id="eye-icon-password_confirmation" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <svg id="eye-off-icon-password_confirmation" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 .847 0 1.67.127 2.456.371M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20"></path></svg>
+                        </button>
                     </div>
                     
                     <button type="button" onclick="nextStep()" class="w-full bg-slate-800 text-white font-extrabold py-4 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all mt-6 flex items-center justify-center gap-2 shadow-lg shadow-slate-800/10">
@@ -93,33 +104,31 @@
                 <div id="step2-mahasiswa" class="hidden space-y-6">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Nama Lengkap</label>
-                        <input type="text" name="nama_mahasiswa" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama lengkap sesuai KTM">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">NPM / NIM</label>
-                        <input type="text" name="npm" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nomor Pokok Mahasiswa">
+                        <input type="text" name="nama_mahasiswa" value="{{ old('nama_mahasiswa') }}" class="w-full px-5 py-4 rounded-2xl border @error('nama_mahasiswa') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama lengkap sesuai KTM">
+                        @error('nama_mahasiswa') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Instansi / Universitas</label>
-                        <input type="text" name="instansi" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Asal kampus Anda">
+                        <input type="text" name="instansi" value="{{ old('instansi') }}" class="w-full px-5 py-4 rounded-2xl border @error('instansi') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Asal kampus Anda">
+                        @error('instansi') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Jenjang</label>
-                            <input type="text" name="jenjang" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Contoh: S1">
+                            <input type="text" name="jenjang" value="{{ old('jenjang') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Contoh: S1">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm">
+                            <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm text-slate-500">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Jenis Kelamin</label>
-                        <select name="jenis_kelamin" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm">
+                        <select name="jenis_kelamin" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm text-slate-500">
                             <option value="">Pilih Jenis Kelamin</option>
-                            <option value="Laki-laki">Laki-laki</option>
-                            <option value="Perempuan">Perempuan</option>
+                            <option value="Laki-laki" @if(old('jenis_kelamin') == 'Laki-laki') selected @endif>Laki-laki</option>
+                            <option value="Perempuan" @if(old('jenis_kelamin') == 'Perempuan') selected @endif>Perempuan</option>
                         </select>
                     </div>
                     
@@ -137,11 +146,13 @@
                 <div id="step2-dosen" class="hidden space-y-6">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Nama Lengkap (beserta Gelar)</label>
-                        <input type="text" name="nama_dosen" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama dan gelar akademik">
+                        <input type="text" name="nama_dosen" value="{{ old('nama_dosen') }}" class="w-full px-5 py-4 rounded-2xl border @error('nama_dosen') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama dan gelar akademik">
+                        @error('nama_dosen') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Instansi / Universitas</label>
-                        <input type="text" name="instansi_dosen" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Tempat Anda mengajar">
+                        <input type="text" name="instansi_dosen" value="{{ old('instansi_dosen') }}" class="w-full px-5 py-4 rounded-2xl border @error('instansi_dosen') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Tempat Anda mengajar">
+                        @error('instansi_dosen') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
                     
                     <div class="flex gap-4">
@@ -187,8 +198,46 @@
             selectRole(document.getElementById('user_role').value);
         });
 
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const eyeIcon = document.getElementById('eye-icon-' + id);
+            const eyeOffIcon = document.getElementById('eye-off-icon-' + id);
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.classList.add('hidden');
+                eyeOffIcon.classList.remove('hidden');
+            } else {
+                input.type = 'password';
+                eyeIcon.classList.remove('hidden');
+                eyeOffIcon.classList.add('hidden');
+            }
+        }
+
         function nextStep() {
+            let isStep1Valid = true;
+            const requiredInputs = document.querySelectorAll('#step1 input[required]');
+            const password = document.getElementById('password');
+            const passwordConfirmation = document.getElementById('password_confirmation');
+
+            // Hapus pesan error lama yang dinamis
+            document.querySelectorAll('#step1 .dynamic-error').forEach(el => el.remove());
+            requiredInputs.forEach(input => input.classList.remove('border-red-300'));
+            passwordConfirmation.classList.remove('border-red-300');
+
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isStep1Valid = false;
+                    input.classList.add('border-red-300');
+                    const errorMsg = document.createElement('p');
+                    errorMsg.className = 'text-red-500 text-xs mt-1.5 ml-1 dynamic-error';
+                    errorMsg.textContent = 'Bagian ini wajib diisi.';
+                    input.closest('div').appendChild(errorMsg);
+                }
+            });
+
             const role = document.getElementById('user_role').value;
+            if (!isStep1Valid) return;
             
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('role-selector').classList.add('hidden');

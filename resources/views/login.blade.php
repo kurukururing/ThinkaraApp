@@ -38,22 +38,37 @@
             {{-- Pesan Error Validasi Global --}}
             @if ($errors->any())
                 <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-2xl text-sm">
-                    {{ $errors->first() }}
+                    <ul class="list-disc pl-5 space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
             <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
                 @csrf
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2 ml-1">Username</label>
-                    <input type="text" name="username" value="{{ old('username') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Masukkan username Anda" required>
+                    <label for="username" class="block text-xs font-bold text-slate-700 mb-2 ml-1">Username</label>
+                    <input id="username" type="text" name="username" value="{{ old('username') }}" class="w-full px-5 py-4 rounded-2xl border @error('username') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Masukkan username Anda" required autofocus>
+                    @error('username') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                 </div>
-                <div>
-                    <div class="flex justify-between items-center mb-2 ml-1">
-                        <label class="block text-xs font-bold text-slate-700">Password</label>
-                        <a href="#" class="text-[11px] text-brand font-bold hover:underline">Lupa Password?</a>
+                <div class="relative">
+                    <label for="password" class="block text-xs font-bold text-slate-700 mb-2 ml-1">Password</label>
+                    <input id="password" type="password" name="password" class="w-full px-5 py-4 rounded-2xl border @error('password') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="••••••••" required>
+                    <button type="button" onclick="togglePassword('password')" class="absolute inset-y-0 right-0 top-7 px-4 text-slate-400 hover:text-brand">
+                        <svg id="eye-icon-password" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <svg id="eye-off-icon-password" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 .847 0 1.67.127 2.456.371M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20"></path></svg>
+                    </button>
+                    @error('password') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
+                </div>
+                
+                <div class="flex items-center justify-between !mt-4">
+                    <div class="flex items-center">
+                        <input id="remember" name="remember" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand/50">
+                        <label for="remember" class="ml-2 block text-sm text-slate-600 font-bold">Ingat saya</label>
                     </div>
-                    <input type="password" name="password" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="••••••••" required>
+                    <a href="#" class="text-xs text-brand font-bold hover:underline">Lupa Password?</a>
                 </div>
                 
                 {{-- PERBAIKAN: Tombol dipastikan bertipe submit agar memicu route POST --}}
@@ -67,5 +82,23 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const eyeIcon = document.getElementById('eye-icon-' + id);
+            const eyeOffIcon = document.getElementById('eye-off-icon-' + id);
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.classList.add('hidden');
+                eyeOffIcon.classList.remove('hidden');
+            } else {
+                input.type = 'password';
+                eyeIcon.classList.remove('hidden');
+                eyeOffIcon.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
