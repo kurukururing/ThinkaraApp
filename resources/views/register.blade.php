@@ -96,8 +96,31 @@
                         <input type="text" name="nama_mahasiswa" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama lengkap sesuai KTM">
                     </div>
                     <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">NPM / NIM</label>
+                        <input type="text" name="npm" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nomor Pokok Mahasiswa">
+                    </div>
+                    <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Instansi / Universitas</label>
-                        <input type="text" name="instansi_mahasiswa" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Asal kampus Anda">
+                        <input type="text" name="instansi" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Asal kampus Anda">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Jenjang</label>
+                            <input type="text" name="jenjang" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Contoh: S1">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Tanggal Lahir</label>
+                            <input type="date" name="tanggal_lahir" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Jenis Kelamin</label>
+                        <select name="jenis_kelamin" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm">
+                            <option value="">Pilih Jenis Kelamin</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
                     </div>
                     
                     <div class="flex gap-4">

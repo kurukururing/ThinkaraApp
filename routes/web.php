@@ -83,6 +83,13 @@ Route::middleware(['auth'])->group(function () {
 
     // Rute Halaman Pembahasan
     Route::get('/pembahasan/{id}', [SoalController::class, 'getPembahasan'])->name('pembahasan');
+
+    // Rute Quiz Mahasiswa
+    Route::get('/quiz/{slug}', [\App\Http\Controllers\QuizController::class, 'join'])->name('quiz.join');
+    Route::post('/quiz/{slug}/start', [\App\Http\Controllers\QuizController::class, 'start'])->name('quiz.start');
+    Route::get('/quiz/{slug}/play/{urutan}', [\App\Http\Controllers\QuizController::class, 'play'])->name('quiz.play');
+    Route::get('/quiz/{slug}/pembahasan/{urutan}', [\App\Http\Controllers\QuizController::class, 'pembahasan'])->name('quiz.pembahasan');
+    Route::get('/quiz/{slug}/result', [\App\Http\Controllers\QuizController::class, 'result'])->name('quiz.result');
 });
 
 // =========================================================================
