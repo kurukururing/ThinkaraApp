@@ -47,9 +47,53 @@ class SoalSeeder extends Seeder
             ['id_soal' => $soal2->id_soal, 'isi_item' => 'Buku "Panduan Implementasi PBL di Sekolah Menengah" (2022).', 'tipe' => 'reference', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
+        $soal3 = Soal::create([
+            'id_latihan' => 1,
+            'topik' => 'Penggunaan Kecerdasan Buatan (AI) dalam Pendidikan',
+            'isi_soal' => 'Pemanfaatan kecerdasan buatan (Artificial Intelligence/AI) dalam pendidikan mulai meningkat, terutama untuk membantu personalisasi pembelajaran dan penyelesaian tugas akademik. Namun, penggunaannya juga memunculkan tantangan terkait ketergantungan teknologi.',
+            'penjelasan' => 'Argumen yang baik dimulai dengan klaim mengenai manfaat AI, dilanjutkan evidence dari hasil penelitian atau survei pendidikan, reasoning yang menjelaskan hubungan logis, lalu reference dari jurnal atau laporan terpercaya.',
+        ]);
+
+        SoalItemBuilder::insert([
+            ['id_soal' => $soal3->id_soal, 'isi_item' => 'Penggunaan AI dalam pendidikan dapat meningkatkan efektivitas proses belajar mahasiswa.', 'tipe' => 'claim', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal3->id_soal, 'isi_item' => 'Survei pendidikan tahun 2023 menunjukkan mahasiswa yang menggunakan AI secara terarah mengalami peningkatan pemahaman materi lebih cepat.', 'tipe' => 'evidence', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal3->id_soal, 'isi_item' => 'Hal ini terjadi karena AI dapat memberikan umpan balik instan dan penjelasan yang disesuaikan dengan kebutuhan pengguna.', 'tipe' => 'reasoning', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal3->id_soal, 'isi_item' => 'Journal of Educational Technology, "AI-Assisted Learning in Higher Education" (2023).', 'tipe' => 'reference', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        // 4. Soal Argument Builder (ID Latihan = 1)
+        $soal4 = Soal::create([
+            'id_latihan' => 1,
+            'topik' => 'Pentingnya Literasi Digital bagi Mahasiswa',
+            'isi_soal' => 'Di era digital, mahasiswa dihadapkan pada banjir informasi dari berbagai sumber daring. Kemampuan memilah informasi yang valid menjadi keterampilan penting untuk menunjang pembelajaran dan penelitian.',
+            'penjelasan' => 'Susunan argumen terdiri atas klaim mengenai pentingnya literasi digital, evidence dari data atau penelitian, reasoning yang menjelaskan dampaknya, serta reference sebagai sumber valid.',
+        ]);
+
+        SoalItemBuilder::insert([
+            ['id_soal' => $soal4->id_soal, 'isi_item' => 'Literasi digital sangat penting untuk membantu mahasiswa menghindari penyebaran informasi yang salah.', 'tipe' => 'claim', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal4->id_soal, 'isi_item' => 'Penelitian tahun 2022 menunjukkan mahasiswa dengan tingkat literasi digital tinggi lebih mampu mengevaluasi kredibilitas sumber informasi akademik.', 'tipe' => 'evidence', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal4->id_soal, 'isi_item' => 'Kemampuan mengevaluasi sumber membantu mahasiswa membedakan informasi faktual dan hoaks, sehingga kualitas pembelajaran meningkat.', 'tipe' => 'reasoning', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal4->id_soal, 'isi_item' => 'Digital Literacy Research Report (2022).', 'tipe' => 'reference', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        // 5. Soal Argument Builder (ID Latihan = 1)
+        $soal5 = Soal::create([
+            'id_latihan' => 1,
+            'topik' => 'Pembelajaran Daring (Online Learning)',
+            'isi_soal' => 'Pembelajaran daring menjadi salah satu metode utama dalam dunia pendidikan, terutama setelah pandemi. Sistem ini menawarkan fleksibilitas waktu dan akses materi, tetapi juga menghadapi tantangan dalam menjaga motivasi belajar siswa.',
+            'penjelasan' => 'Argumen harus diawali dengan klaim terkait efektivitas pembelajaran daring, diikuti evidence berupa hasil survei atau penelitian, reasoning sebagai hubungan logis, dan reference dari sumber terpercaya.',
+        ]);
+
+        SoalItemBuilder::insert([
+            ['id_soal' => $soal5->id_soal, 'isi_item' => 'Pembelajaran daring dapat meningkatkan fleksibilitas belajar mahasiswa secara signifikan.', 'tipe' => 'claim', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal5->id_soal, 'isi_item' => 'Survei pendidikan tahun 2021 menunjukkan mayoritas mahasiswa merasa lebih mudah mengakses materi pembelajaran melalui platform daring.', 'tipe' => 'evidence', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal5->id_soal, 'isi_item' => 'Kemudahan akses memungkinkan mahasiswa belajar kapan saja dan mengulang materi sesuai kebutuhan masing-masing.', 'tipe' => 'reasoning', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal5->id_soal, 'isi_item' => 'International Journal of Online Education (2021).', 'tipe' => 'reference', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
         // 3. Soal untuk Fallacy Finder
         // 3. Soal untuk Fallacy Finder (ID Latihan = 2)
-        $soal3 = Soal::create([
+        $soal6 = Soal::create([
             'id_latihan' => 2,
             'topik' => 'Aturan Pembatasan Kendaraan Pribadi di Kampus',
             'isi_soal'=>'Seorang mahasiswa memprotes kebijakan rektorat: "Jika rektorat mulai melarang kita membawa motor ke kampus hari ini, besok mereka akan melarang kita makan di kantin, dan pada akhirnya mereka akan mengatur jam tidur kita! Kebijakan ini harus dibatalkan!"',
@@ -57,15 +101,15 @@ class SoalSeeder extends Seeder
         ]);
 
         SoalItemFallacy::insert([
-            ['id_soal' => $soal3->id_soal, 'jenis_kesalahan' => 'Slippery Slope', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal3->id_soal, 'jenis_kesalahan' => 'Ad Hominem', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal3->id_soal, 'jenis_kesalahan' => 'Strawman', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal3->id_soal, 'jenis_kesalahan' => 'False Dilemma', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal6->id_soal, 'jenis_kesalahan' => 'Slippery Slope', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal6->id_soal, 'jenis_kesalahan' => 'Ad Hominem', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal6->id_soal, 'jenis_kesalahan' => 'Strawman', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal6->id_soal, 'jenis_kesalahan' => 'False Dilemma', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         // 4. Soal Lain untuk Fallacy Finder
         // 4. Soal Lain untuk Fallacy Finder (ID Latihan = 2)
-        $soal4 = Soal::create([
+        $soal7 = Soal::create([
             'id_latihan' => 2,
             'topik' => 'Perdebatan Pemilihan Ketua BEM',
             'isi_soal'=>'Salah satu kandidat berkata dalam debat: "Kita tidak perlu mendengarkan usulan program kerja dari kandidat nomor 2, dia kan mahasiswa baru yang nilai IPK-nya pas-pasan!"',
@@ -73,14 +117,14 @@ class SoalSeeder extends Seeder
         ]);
 
         SoalItemFallacy::insert([
-            ['id_soal' => $soal4->id_soal, 'jenis_kesalahan' => 'Ad Hominem', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal4->id_soal, 'jenis_kesalahan' => 'Appeal to Emotion', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal4->id_soal, 'jenis_kesalahan' => 'Bandwagon', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal4->id_soal, 'jenis_kesalahan' => 'Hasty Generalization', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal7->id_soal, 'jenis_kesalahan' => 'Ad Hominem', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal7->id_soal, 'jenis_kesalahan' => 'Appeal to Emotion', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal7->id_soal, 'jenis_kesalahan' => 'Bandwagon', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal7->id_soal, 'jenis_kesalahan' => 'Hasty Generalization', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         // 5. Soal untuk Fix The Argument (ID Latihan = 3)
-        $soal5 = Soal::create([
+        $soal8 = Soal::create([
             'id_latihan' => 3,
             'topik' => 'Pentingnya Sarapan Sebelum Memulai Aktivitas',
             'isi_soal'=>'Banyak orang melewatkan sarapan dengan alasan terburu-buru, namun sarapan memiliki peran penting bagi tubuh. Beberapa ahli gizi menyebutkan bahwa energi yang cukup di pagi hari meningkatkan produktivitas.',
@@ -88,14 +132,14 @@ class SoalSeeder extends Seeder
         ]);
 
         SoalItemBuilder::insert([
-            ['id_soal' => $soal5->id_soal, 'isi_item' => 'Sarapan yang bergizi di pagi hari dapat meningkatkan produktivitas dan fokus kerja seseorang.', 'tipe' => 'claim', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal5->id_soal, 'isi_item' => 'Data dari Kementerian Kesehatan menunjukkan bahwa individu yang rutin sarapan memiliki tingkat konsentrasi 30% lebih tinggi.', 'tipe' => 'evidence', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal5->id_soal, 'isi_item' => 'Hal ini disebabkan karena asupan karbohidrat di pagi hari mengembalikan kadar glukosa darah yang menjadi sumber bahan bakar utama otak.', 'tipe' => 'reasoning', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal5->id_soal, 'isi_item' => 'Buku "Nutrisi dan Kinerja Otak" (2021).', 'tipe' => 'reference', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal8->id_soal, 'isi_item' => 'Sarapan yang bergizi di pagi hari dapat meningkatkan produktivitas dan fokus kerja seseorang.', 'tipe' => 'claim', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal8->id_soal, 'isi_item' => 'Data dari Kementerian Kesehatan menunjukkan bahwa individu yang rutin sarapan memiliki tingkat konsentrasi 30% lebih tinggi.', 'tipe' => 'evidence', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal8->id_soal, 'isi_item' => 'Hal ini disebabkan karena asupan karbohidrat di pagi hari mengembalikan kadar glukosa darah yang menjadi sumber bahan bakar utama otak.', 'tipe' => 'reasoning', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal8->id_soal, 'isi_item' => 'Buku "Nutrisi dan Kinerja Otak" (2021).', 'tipe' => 'reference', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         // 6. Soal untuk Gamified QTE (ID Latihan = 4)
-        $soal6 = Soal::create([
+        $soal9 = Soal::create([
             'id_latihan' => 4,
             'topik' => 'Evaluasi Kecepatan Argumen Logis',
             'isi_soal'=>'Perhatikan argumen berikut secara cepat. Apakah pernyataan ini memuat argumen yang valid atau kesesatan logika? "Semua orang sukses bangun jam 5 pagi. Jika kamu tidak bangun jam 5 pagi, kamu tidak akan pernah sukses."',
@@ -103,12 +147,12 @@ class SoalSeeder extends Seeder
         ]);
 
         SoalItemQte::insert([
-            ['id_soal' => $soal6->id_soal, 'isi_item' => 'Terdapat Kesalahan Logika (Fallacy)', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal6->id_soal, 'isi_item' => 'Argumen Logis dan Valid', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal9->id_soal, 'isi_item' => 'Terdapat Kesalahan Logika (Fallacy)', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal9->id_soal, 'isi_item' => 'Argumen Logis dan Valid', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         // 7. Soal Lain Gamified QTE (ID Latihan = 4)
-        $soal7 = Soal::create([
+        $soal10 = Soal::create([
             'id_latihan' => 4,
             'topik' => 'Evaluasi Kecepatan Argumen Logis',
             'isi_soal'=>'Membaca buku setiap hari dapat memperluas kosa kata karena kita terpapar pada berbagai istilah baru yang tidak selalu muncul dalam percakapan sehari-hari.',
@@ -116,8 +160,8 @@ class SoalSeeder extends Seeder
         ]);
 
         SoalItemQte::insert([
-            ['id_soal' => $soal7->id_soal, 'isi_item' => 'Argumen Logis dan Valid', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['id_soal' => $soal7->id_soal, 'isi_item' => 'Terdapat Kesalahan Logika (Fallacy)', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal10->id_soal, 'isi_item' => 'Argumen Logis dan Valid', 'is_correct' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['id_soal' => $soal10->id_soal, 'isi_item' => 'Terdapat Kesalahan Logika (Fallacy)', 'is_correct' => false, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

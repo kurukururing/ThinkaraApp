@@ -34,6 +34,11 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');
             }
 
+            // Cek jika yang login adalah dosen, arahkan ke panel dosen
+            if ($akun->user_role === 'dosen') {
+                return redirect()->route('dosen.dashboard')->with('success', 'Selamat datang Dosen!');
+            }
+
             return redirect()->to('/dashboard')->with('success', 'Selamat datang kembali!');
         }
 

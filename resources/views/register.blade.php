@@ -85,7 +85,7 @@
                 <div id="step2" class="space-y-6 hidden">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Nama Lengkap</label>
-                        <input type="text" name="nama_mahasiswa" value="{{ old('nama_mahasiswa') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama Lengkap Mahasiswa" required>
+                        <input type="text" name="nama_mahasiswa" value="{{ old('nama_mahasiswa') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Nama Lengkap pengguna" required>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">

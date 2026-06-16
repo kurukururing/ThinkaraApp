@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DosenController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\AuthController;
@@ -85,3 +86,18 @@ Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin'
     Route::put('/soal/{id}', [AdminController::class, 'updateSoal'])->name('soal.update');
     Route::delete('/soal/{id}', [AdminController::class, 'destroySoal'])->name('soal.destroy');
 });
+
+// =========================================================================
+// 4. HALAMAN DOSEN
+// =========================================================================
+Route::middleware(['auth', \App\Http\Middleware\IsDosen::class])->prefix('dosen')->name('dosen.')->group(function () {
+ 
+    // Dashboard dosen
+    Route::get('/quiz', [DosenController::class, 'index'])->name('dashboard');
+    // Buat quiz baru
+    Route::post('/quiz', [DosenController::class, 'store'])->name('store');
+    // Hapus quiz
+    Route::delete('/quiz/{quiz}', [DosenController::class, 'destroy'])->name('destroy');
+    // Toggle aktif/nonaktif
+    Route::patch('/quiz/{quiz}/toggle', [DosenController::class, 'toggle'])->name('toggle');
+    });

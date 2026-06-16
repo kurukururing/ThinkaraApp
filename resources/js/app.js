@@ -460,4 +460,150 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // Logika untuk Halaman Dosen: Manajemen Quiz
+    const dosenQuizPage = document.getElementById('formBuatQuiz');
+    if (dosenQuizPage) {
+ 
+        // 1. Custom Dropdown Jenis Latihan
+        const btnTrigger     = document.getElementById('btnDropdownTrigger');
+        const dropdownPanel  = document.getElementById('dropdownPanel');
+        const dropdownLabel  = document.getElementById('dropdownLabel');
+        const dropdownChevron = document.getElementById('dropdownChevron');
+        const hiddenIdLatihan = document.getElementById('hiddenIdLatihan');
+ 
+        function openDropdown() {
+            dropdownPanel.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                dropdownPanel.classList.remove('opacity-0', '-translate-y-2');
+                dropdownPanel.classList.add('opacity-100', 'translate-y-0');
+            });
+            dropdownChevron.classList.add('rotate-180');
+            btnTrigger.classList.add('border-brand');
+        }
+ 
+        function closeDropdown() {
+            dropdownPanel.classList.remove('opacity-100', 'translate-y-0');
+            dropdownPanel.classList.add('opacity-0', '-translate-y-2');
+            dropdownChevron.classList.remove('rotate-180');
+            btnTrigger.classList.remove('border-brand');
+            // Sembunyikan setelah animasi selesai
+            setTimeout(() => dropdownPanel.classList.add('hidden'), 200);
+        }
+ 
+        btnTrigger.addEventListener('click', function () {
+            const isOpen = !dropdownPanel.classList.contains('hidden');
+            isOpen ? closeDropdown() : openDropdown();
+        });
+ 
+        // Tutup dropdown jika klik di luar
+        document.addEventListener('click', function (e) {
+            const wrapper = document.getElementById('dropdownJenisLatihan');
+            if (wrapper && !wrapper.contains(e.target)) {
+                closeDropdown();
+            }
+        });
+ 
+        // Pilih opsi dari dropdown
+        document.querySelectorAll('.dropdown-option').forEach(function (option) {
+            option.addEventListener('click', function () {
+                const id    = this.dataset.id;
+                const label = this.dataset.label;
+ 
+                // Set nilai hidden input
+                hiddenIdLatihan.value = id;
+ 
+                // Update label tombol trigger
+                dropdownLabel.textContent = label;
+                btnTrigger.classList.remove('text-slate-400');
+                btnTrigger.classList.add('text-slate-700');
+ 
+                // Tampilkan centang hanya pada opsi terpilih
+                document.querySelectorAll('.dropdown-option').forEach(function (opt) {
+                    opt.querySelector('.check-icon').classList.add('hidden');
+                });
+                this.querySelector('.check-icon').classList.remove('hidden');
+ 
+                closeDropdown();
+            });
+        });
+ 
+        // Validasi: pastikan jenis latihan sudah dipilih sebelum submit
+        dosenQuizPage.addEventListener('submit', function (e) {
+            if (!hiddenIdLatihan.value) {
+                e.preventDefault();
+                // Highlight dropdown sebagai error
+                btnTrigger.classList.add('border-red-400', 'ring-2', 'ring-red-200');
+                dropdownLabel.classList.add('text-red-400');
+                dropdownLabel.textContent = 'Pilih jenis latihan terlebih dahulu';
+                // Reset setelah beberapa detik
+                setTimeout(function () {
+                    btnTrigger.classList.remove('border-red-400', 'ring-2', 'ring-red-200');
+                    dropdownLabel.classList.remove('text-red-400');
+                    dropdownLabel.textContent = 'Pilih jenis latihan...';
+                }, 3000);
+            }
+        });
+ 
+ 
+        // 2. Tombol Salin Link Quiz
+        document.querySelectorAll('.btn-copy-link').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const url       = this.dataset.url;
+                const iconCopy  = this.querySelector('.icon-copy');
+                const iconCheck = this.querySelector('.icon-check');
+                const feedback  = this.closest('.flex-1.min-w-0').querySelector('.copy-feedback');
+ 
+                navigator.clipboard.writeText(url).then(function () {
+                    // Tukar ikon
+                    iconCopy.classList.add('hidden');
+                    iconCheck.classList.remove('hidden');
+                    if (feedback) feedback.classList.remove('hidden');
+ 
+                    // Kembalikan setelah 2 detik
+                    setTimeout(function () {
+                        iconCopy.classList.remove('hidden');
+                        iconCheck.classList.add('hidden');
+                        if (feedback) feedback.classList.add('hidden');
+                    }, 2000);
+                }).catch(function () {
+                    // Fallback untuk browser yang tidak support clipboard API
+                    alert('Salin link ini secara manual:\n' + url);
+                });
+            });
+        });
+ 
+ 
+        // 3. Konfirmasi Hapus Quiz (mini popover)
+        document.querySelectorAll('.btn-hapus-quiz').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const wrapper  = this.closest('.relative');
+                const popover  = wrapper.querySelector('.confirm-hapus');
+ 
+                // Tutup semua popover lain yang mungkin terbuka
+                document.querySelectorAll('.confirm-hapus').forEach(function (p) {
+                    if (p !== popover) p.classList.add('hidden');
+                });
+ 
+                popover.classList.toggle('hidden');
+            });
+        });
+ 
+        // Tombol Batal di dalam popover hapus
+        document.querySelectorAll('.btn-batal-hapus').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                this.closest('.confirm-hapus').classList.add('hidden');
+            });
+        });
+ 
+        // Tutup popover hapus jika klik di luar
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.btn-hapus-quiz') && !e.target.closest('.confirm-hapus')) {
+                document.querySelectorAll('.confirm-hapus').forEach(function (p) {
+                    p.classList.add('hidden');
+                });
+            }
+        });
+    }
 })

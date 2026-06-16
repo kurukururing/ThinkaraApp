@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('soal_item_fix', function (Blueprint $table) {
-            $table->id('id_item_fix');
+        Schema::create('quiz_soal', function (Blueprint $table) {
+            $table->id('id_quiz_soal');
+            $table->unsignedBigInteger('id_quiz');
             $table->unsignedBigInteger('id_soal');
-            $table->text('isi_item');
-            $table->integer('urutan_benar'); // Kunci jawaban: urutan yang benar (misal: 1, 2, 3...)
+            $table->unsignedInteger('urutan');              // urutan soal dalam quiz (1-5)
             $table->timestamps();
-
-            // Menambahkan foreign key ke tabel soal
+ 
+            $table->foreign('id_quiz')->references('id_quiz')->on('quiz')->onDelete('cascade');
             $table->foreign('id_soal')->references('id_soal')->on('soal')->onDelete('cascade');
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('soal_item_fix');
+        Schema::dropIfExists('quiz_soal');
     }
 };
