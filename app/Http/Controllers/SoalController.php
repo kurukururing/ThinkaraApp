@@ -158,6 +158,13 @@ class SoalController extends Controller
             ]);
         }
 
+        // Ambil teks dari item yang dipilih user berdasarkan ID yang dikirim
+        // Urutkan sesuai yang dikirim user
+        $userAnswerItems = SoalItemBuilder::whereIn('id_item_builder', $userAnswers)
+            ->get()
+            ->sortBy(fn($item) => array_search($item->id_item_builder, $userAnswers))
+            ->values();
+
         // Simpan hasil ke session flash untuk ditampilkan di halaman Pembahasan
         session()->flash('pembahasan_data', [
             'type' => $type,
@@ -168,6 +175,11 @@ class SoalController extends Controller
             'skor' => $skorDidapat,
             'xp' => $xpDidapat,
             'durasi' => $durasi,
+            'jawaban_user' => $userAnswerItems->map(fn($i) => [
+            'id'       => $i->id_item_builder,
+            'tipe'     => $i->tipe,
+            'isi_item' => $i->isi_item,
+            ])->toArray(),
         ]);
 
         // Kirimkan response berupa URL tujuan (halaman pembahasan)
@@ -226,6 +238,11 @@ class SoalController extends Controller
             'skor' => $skorDidapat,
             'xp' => $xpDidapat,
             'durasi' => $durasi,
+            'jawaban_user' => [
+            'id'              => $jawabanUser->id_item_fallacy,
+            'jenis_kesalahan' => $jawabanUser->jenis_kesalahan,
+            'is_correct'      => $isCorrect,
+            ],
         ]);
 
         return response()->json([
@@ -280,6 +297,11 @@ class SoalController extends Controller
             'skor' => $skorDidapat,
             'xp' => $xpDidapat,
             'durasi' => $durasi,
+            'jawaban_user' => [
+            'id'       => $jawabanUser->id_item_qte,
+            'isi_item' => $jawabanUser->isi_item,
+            'is_correct' => $isCorrect,
+            ],
         ]);
 
         return response()->json([
