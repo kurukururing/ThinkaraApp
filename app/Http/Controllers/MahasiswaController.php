@@ -18,10 +18,40 @@ class MahasiswaController extends Controller
     public function dashboard()
     {
         $akun = Auth::user();
-        $totalXp = HasilSesiLatihan::where('id_akun', $akun->id_akun)->sum('xp');
-        $totalSkor = HasilSesiLatihan::where('id_akun', $akun->id_akun)->sum('skor');
 
-        return view('main.dashboard', compact('totalXp', 'totalSkor'));
+        $riwayat = HasilSesiLatihan::where('id_akun', $akun->id_akun)->get();
+
+        $totalXp = $riwayat->sum('xp');
+        $totalSkor = $riwayat->sum('skor');
+
+        $totalMain = $riwayat->count();
+        $level = floor($totalXp / 100) + 1;
+        $badge = 'Pemikir Pemula';
+
+        if ($totalMain >= 50) {
+            $badge = 'Pemikir Hebat';
+        }
+        elseif ($totalMain >= 20) {
+            $badge = 'Pemikir Aktif';
+        }
+
+        $totalDikerjakan = $totalMain;
+        $badgeCepat = 'Pemula';
+        if ($totalMain >= 50) {
+            $badgeCepat = 'Kilat';
+        } elseif ($totalMain >= 20) {
+            $badgeCepat = 'Cepat';
+        }
+
+        $rataSkor = $riwayat->avg('skor') ?? 0;
+        $badgeAkurat = 'Pemula';
+        if ($rataSkor >= 90) {
+            $badgeAkurat = 'Presisi';
+        } elseif ($rataSkor >= 75) {
+            $badgeAkurat = 'Akurat';
+        }
+
+        return view('main.dashboard', compact('totalXp', 'totalSkor', 'totalMain', 'totalDikerjakan', 'level', 'badge', 'badgeCepat', 'badgeAkurat'));
     }
 
     /**
@@ -31,9 +61,35 @@ class MahasiswaController extends Controller
     {
         $akun = Auth::user();
         // Eager load relasi mahasiswa untuk efisiensi query
-        $akun->load('mahasiswa'); 
-        
-        return view('main.profil', compact('akun'));
+        $akun->load('mahasiswa');
+
+        $riwayat = HasilSesiLatihan::where('id_akun', $akun->id_akun)->get();
+
+        $totalMain = $riwayat->count();
+        $badge = 'Pemula';
+        if ($totalMain >= 50) {
+            $badge = 'Hebat';
+        }
+        elseif ($totalMain >= 20) {
+            $badge = 'Aktif';
+        }
+
+        $badgeCepat = 'Pemula';
+        if ($totalMain >= 50) {
+            $badgeCepat = 'Kilat';
+        } elseif ($totalMain >= 20) {
+            $badgeCepat = 'Cepat';
+        }
+
+        $rataSkor = $riwayat->avg('skor') ?? 0;
+        $badgeAkurat = 'Pemula';
+        if ($rataSkor >= 90) {
+            $badgeAkurat = 'Presisi';
+        } elseif ($rataSkor >= 75) {
+            $badgeAkurat = 'Akurat';
+        }
+
+        return view('main.profil', compact('akun', 'badge', 'badgeCepat', 'badgeAkurat'));
     }
 
     /**
@@ -98,7 +154,7 @@ class MahasiswaController extends Controller
     public function deleteAkun(Request $request)
     {
         $akun = Auth::user();
-        
+
         $akun->update(['is_active' => 0]);
 
         Auth::guard('web')->logout();
@@ -134,7 +190,7 @@ class MahasiswaController extends Controller
 
         $currentUserRank = null;
         $currentUserData = null;
-        
+
         if (Auth::check()) {
             $currentUserId = Auth::user()->id_akun;
             foreach ($leaderboard as $index => $user) {

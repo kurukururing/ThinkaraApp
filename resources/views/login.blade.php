@@ -62,7 +62,7 @@
                     </button>
                     @error('password') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                 </div>
-                
+
                 <div class="flex items-center justify-between !mt-4">
                     <div class="flex items-center">
                         <input id="remember" name="remember" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand/50">
@@ -70,9 +70,9 @@
                     </div>
                     <a href="#" class="text-xs text-brand font-bold hover:underline">Lupa Password?</a>
                 </div>
-                
+
                 {{-- PERBAIKAN: Tombol dipastikan bertipe submit agar memicu route POST --}}
-                <button type="submit" class="w-full bg-primary text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
+                <button type="submit" class="w-full bg-brand text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
                     Masuk
                 </button>
 

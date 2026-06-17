@@ -5,12 +5,14 @@
     {{-- Banner Utama --}}
     <div class="bg-brand rounded-[2rem] p-10 text-white shadow-lg relative overflow-hidden">
         <span class="bg-white/20 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">Langkah Pertama</span>
-        
+
         {{-- PERUBAHAN DI SINI: Mengambil username dari user yang login --}}
         <h2 class="text-3xl font-extrabold mb-3">Halo, {{ Auth::user()->username }}! Siap mengasah logikamu hari ini?</h2>
-        
+
         <p class="text-white/80 text-sm mb-6 max-w-lg">Perjalananmu menjadi pemikir kritis yang mandiri dimulai di sini. Selesaikan misi pertamamu untuk mendapatkan XP dan naik level.</p>
-        <button class="bg-white text-brand px-6 py-2.5 rounded-full font-bold text-sm hover:bg-slate-50 transition">Mulai Latihan Dasar</button>
+        <a href="{{ route('arena') }}" class="inline-block bg-white text-brand px-6 py-2.5 rounded-full font-bold text-sm hover:bg-slate-50 transition">
+            Mulai Latihan Dasar
+        </a>
     </div>
 
     {{-- Statistik --}}
@@ -21,7 +23,7 @@
                 <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center text-brand text-lg">📊</div>
                 <div>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Level Saat Ini</p>
-                    <p class="text-lg font-black text-slate-700">Pemula <span class="text-xs font-normal text-slate-400">(Lv. 1)</span></p>
+                    <p class="text-lg font-black text-slate-700">{{ $badge }} <span class="text-xs font-normal text-slate-400">(Lv. {{ $level }})</span></p>
                 </div>
             </div>
             <div class="bg-white p-5 rounded-2xl flex items-center gap-4 border border-slate-100">
@@ -34,8 +36,8 @@
             <div class="bg-white p-5 rounded-2xl flex items-center gap-4 border border-slate-100">
                 <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center text-orange-500 text-lg">🔥</div>
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Streak Belajar</p>
-                    <p class="text-lg font-black text-slate-700">10 hari</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Latihan Dikerjakan</p>
+                    <p class="text-lg font-black text-slate-700">{{ $totalDikerjakan }}</p>
                 </div>
             </div>
         </div>
@@ -65,5 +67,6 @@
             </div>
         </div>
     </div>
+    
 </div>
 @endsection

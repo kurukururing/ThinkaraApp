@@ -21,10 +21,24 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        $akun = Akun::where('username', $request->username)->first();
+
+        if (!$akun) {
+            return back()->withErrors([
+                'username' => 'Username atau password yang dimasukkan salah.',
+            ]);
+        }
+
+        if (!$akun->is_active) {
+            return back()->withErrors([
+                'username' => 'Akun telah dinonaktifkan.',
+            ]);
+        }
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
-            // Pengalihan spesifik role dosen/admin/mahasiswa sudah 
+
+            // Pengalihan spesifik role dosen/admin/mahasiswa sudah
             // ditangani oleh route /dashboard di web.php
             return redirect()->intended('dashboard');
         }
@@ -45,10 +59,10 @@ class AuthController extends Controller
             'email'          => 'required|string|email|max:255|unique:akun,email',
             'password'       => 'required|string|min:6|confirmed',
             'user_role'      => 'required|in:mahasiswa,dosen',
-            
+
             // Kolom nama_mahasiswa hanya wajib diisi jika mendaftar sebagai mahasiswa
             'nama_mahasiswa' => 'required_if:user_role,mahasiswa|nullable|string|max:255',
-            'npm'            => 'required_if:user_role,mahasiswa|nullable|string|max:50',
+            'npm' => 'required_if:user_role,mahasiswa|nullable|string|max:50|unique:mahasiswa,npm',
             'instansi'       => 'nullable|string|max:255',
             'jenjang'        => 'nullable|string|max:20',
             'tanggal_lahir'  => 'nullable|date',
@@ -68,7 +82,7 @@ class AuthController extends Controller
         // 2. Jika yang mendaftar adalah mahasiswa, buatkan relasi data di tabel Mahasiswa
         if ($validated['user_role'] === 'mahasiswa') {
             Mahasiswa::create([
-                'id_akun'        => $akun->id_akun, 
+                'id_akun'        => $akun->id_akun,
                 'nama_mahasiswa' => $validated['nama_mahasiswa'],
                 'npm'            => $validated['npm'] ?? '-',
                 'instansi'       => $validated['instansi'] ?? null,
@@ -78,10 +92,10 @@ class AuthController extends Controller
             ]);
         } elseif ($validated['user_role'] === 'dosen') {
             // 3. Jika yang mendaftar adalah dosen, buatkan relasi data di tabel Dosen
-            Dosen::create([
-                'id_akun'    => $akun->id_akun,
-                'nama_dosen' => $validated['nama_dosen'],
-            ]);
+            // Dosen::create([
+            //     'id_akun'    => $akun->id_akun,
+            //     'nama_dosen' => $validated['nama_dosen'],
+            // ]);
         }
 
         // Otomatis login setelah pendaftaran berhasil

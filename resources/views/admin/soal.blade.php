@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-[#F8F9FE] text-slate-800 font-sans antialiased flex h-screen overflow-hidden">
-    
+
     <!-- Sidebar -->
     <aside class="w-72 bg-white border-r border-slate-100 flex flex-col shrink-0 hidden md:flex shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
         <div class="h-20 flex items-center px-8 border-b border-slate-50">
@@ -65,7 +65,7 @@
 
         <!-- Scrollable Table Area -->
         <div class="flex-1 overflow-y-auto p-10">
-            
+
             <!-- Tampilkan Notifikasi -->
             @if(session('success'))
                 <div class="mb-8 p-4 rounded-2xl bg-green-50 border border-green-100 text-green-700 flex items-center gap-3 font-semibold shadow-sm animate-[sweep_0.3s_ease-in-out]">
@@ -230,7 +230,7 @@
             </div>
             <h3 class="text-2xl font-black text-slate-800 mb-2">Hapus Soal Ini?</h3>
             <p class="text-sm text-slate-500 mb-8 font-medium">Semua item tebakan atau jawaban yang terkait dengan soal ini juga akan ikut terhapus. Aksi ini tidak dapat dibatalkan.</p>
-            
+
             <form id="deleteForm" method="POST" class="flex justify-center gap-3">
                 @csrf
                 @method('DELETE')
@@ -246,34 +246,52 @@
 
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
+
             modal.classList.remove('hidden');
-            // Allow reflow before adding opacity and scale
+            modal.classList.add('flex');
+
             setTimeout(() => {
                 modal.classList.add('opacity-100');
-                document.getElementById(modalId + 'Content').classList.remove('scale-95');
-                document.getElementById(modalId + 'Content').classList.add('scale-100');
+
+                document
+                    .getElementById(modalId + 'Content')
+                    .classList.remove('scale-95');
+
+                document
+                    .getElementById(modalId + 'Content')
+                    .classList.add('scale-100');
             }, 10);
         }
 
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
+
             modal.classList.remove('opacity-100');
-            document.getElementById(modalId + 'Content').classList.remove('scale-100');
-            document.getElementById(modalId + 'Content').classList.add('scale-95');
-            // Wait for transition to finish
-            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+
+            document
+                .getElementById(modalId + 'Content')
+                .classList.remove('scale-100');
+
+            document
+                .getElementById(modalId + 'Content')
+                .classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
         }
 
         function renderDynamicFields(type, data = null) {
             const latihanId = document.getElementById(`${type}_id_latihan`).value;
             const container = document.getElementById(`${type}_dynamic_fields`);
             container.innerHTML = '';
-            
+
             if (!latihanId) return;
 
             let html = '<h4 class="text-sm font-bold text-slate-800 mb-2">Pengaturan Jawaban Benar</h4>';
             const inputClass = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700 text-sm";
-            
+
             if (latihanId == '1' || latihanId == '3') {
                 const claim = data?.builder_claim || '';
                 const evidence = data?.builder_evidence || '';
@@ -323,13 +341,13 @@
             openModal('editModal');
             // Merakit URL rute pengubahan data menggunakan id soal (Contoh: /admin/soal/5)
             document.getElementById('editForm').action = `/admin/soal/${item.id_soal}`;
-            
+
             // Menyuntikkan data item ke dalam input form
             document.getElementById('edit_id_latihan').value = item.id_latihan;
             document.getElementById('edit_topik').value = item.topik;
             document.getElementById('edit_isi_soal').value = item.isi_soal;
             document.getElementById('edit_penjelasan').value = item.penjelasan || '';
-            
+
             let answersData = {};
             if (item.id_latihan == 1 || item.id_latihan == 3) {
                 if (item.builder_items) {

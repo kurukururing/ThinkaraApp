@@ -40,7 +40,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 // 3. PROTEKSI DASHBOARD & FITUR UTAMA (Wajib Login)
 // =========================================================================
 Route::middleware(['auth'])->group(function () {
-    
+
     // Rute Autentikasi
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -105,10 +105,10 @@ Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->prefix('admin'
 });
 
 // =========================================================================
-// 4. HALAMAN DOSEN
+// 5. HALAMAN DOSEN
 // =========================================================================
 Route::middleware(['auth', \App\Http\Middleware\IsDosen::class])->prefix('dosen')->name('dosen.')->group(function () {
- 
+
     // Dashboard dosen
     Route::get('/quiz', [DosenController::class, 'index'])->name('dashboard');
     // Buat quiz baru

@@ -17,7 +17,7 @@
                     <div class="w-8 h-8 bg-brand rounded-xl flex items-center justify-center text-white text-lg">✨</div>
                     THINKARA
                 </span>
-                
+
                 <div class="hidden md:flex items-center space-x-8 font-semibold text-slate-600">
                     <a href="#home" class="hover:text-brand transition-colors">Beranda</a>
                     <a href="#about" class="hover:text-brand transition-colors">Tentang</a>
@@ -28,7 +28,7 @@
 
                 <div class="hidden md:flex items-center space-x-4">
                     <a href="/register" class="text-slate-500 hover:text-brand font-semibold transition-colors">Daftar</a>
-                    <a href="/login" class="bg-primary text-white px-6 py-2.5 rounded-full hover:bg-brand transition-all font-bold shadow-lg shadow-brand-light">Masuk</a>
+                    <a href="/login" class="bg-brand text-white px-6 py-2.5 rounded-full hover:bg-brand transition-all font-bold shadow-lg shadow-brand-light">Masuk</a>
                 </div>
 
                 <button id="mobileMenuBtn" class="md:hidden text-brand focus:outline-none">
@@ -43,7 +43,7 @@
         <section id="home" class="relative overflow-hidden bg-gradient-to-b from-brand-light/30 via-white to-surface min-h-screen flex items-center pt-24 pb-12">
             <div class="absolute top-20 left-10 w-64 h-64 bg-accent-light rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
             <div class="absolute top-40 right-20 w-72 h-72 bg-brand-light rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-            
+
             <div class="max-w-5xl mx-auto px-6 relative z-10 text-center w-full">
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-light soft-shadow text-brand font-bold text-sm mb-8">
                     <span class="relative flex h-3 w-3">
@@ -52,18 +52,18 @@
                     </span>
                     Asah Kritis, Mandiri Tanpa AI
                 </div>
-                
+
                 <h1 class="text-5xl md:text-7xl font-extrabold text-slate-800 mb-6 leading-[1.1] tracking-tight">
                     Berhenti Menyalin,<br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-accent">Mulai Memahami. 🧠</span>
                 </h1>
-                
+
                 <p class="text-lg md:text-xl font-medium text-slate-500 mb-10 max-w-2xl mx-auto">
                     Kembangkan kemampuan berpikir kritis. Otakmu lebih hebat dari algoritma manapun. Mari berlatih secara menyenangkan!
                 </p>
-                
+
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="#features" class="bg-secondary text-white font-bold py-4 px-8 rounded-full shadow-lg hover:-translate-y-1 transition transform w-full sm:w-auto text-center text-lg">Mulai Bermain 🚀</a>
+                    <a href="#features" class="bg-brand hover:bg-[#6d28d9] text-white font-bold py-4 px-8 rounded-full shadow-lg hover:-translate-y-1 transition transform w-full sm:w-auto text-center text-lg">Mulai Bermain 🚀</a>
                     <a href="#about" class="bg-white text-slate-700 border border-slate-200 py-4 px-8 rounded-full font-bold hover:bg-slate-50 transition w-full sm:w-auto text-center text-lg">Pelajari Lebih Lanjut</a>
                 </div>
             </div>
@@ -79,14 +79,14 @@
                         <span class="text-4xl">💡</span>
                     </div>
                 </div>
-                
+
                 <div class="w-full lg:w-1/2 space-y-8 relative z-10">
                     <div>
                         <span class="text-accent font-bold tracking-wider uppercase text-sm mb-2 block">Mengapa Berpikir Kritis?</span>
                         <h2 class="text-3xl md:text-5xl font-extrabold text-slate-800 leading-tight mb-6"> Otakmu Lebih Hebat dari <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-accent">Algoritma.</span></h2>
                         <p class="text-lg text-slate-500 leading-relaxed font-medium">Di era di mana AI bisa menjawab hampir segalanya, kemampuan untuk menganalisis dan memecahkan masalah secara mandiri menjadi sangat mahal.</p>
                     </div>
-                    
+
                     <div class="space-y-4">
                         <div class="flex items-center gap-4 bg-slate-50 hover:bg-white p-4 rounded-2xl border border-slate-100 soft-shadow transition-all">
                             <div class="w-14 h-14 bg-brand-light/30 text-brand rounded-xl flex items-center justify-center font-extrabold text-xl shrink-0">1</div>
@@ -254,7 +254,7 @@
 
             <div class="max-w-7xl mx-auto px-6 relative z-10">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16 border-b border-slate-800 pb-12">
-                    
+
                     <div class="md:col-span-2">
                         <span class="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2 mb-6">
                             <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-white text-xl shadow-lg shadow-brand/30">✨</div>

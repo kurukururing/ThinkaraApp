@@ -13,5 +13,5 @@ class SoalItemQte extends Model
 
     protected $primaryKey = 'id_item_qte';
 
-    protected $fillable = ['id_soal', 'opsi_jawaban', 'is_correct'];
+    protected $fillable = ['id_soal', 'isi_item', 'is_correct'];
 }

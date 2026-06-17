@@ -55,7 +55,7 @@
 
             <form action="{{ route('register.post') }}" method="POST" class="space-y-6">
                 @csrf
-                
+
                 <input type="hidden" name="user_role" id="user_role" value="{{ old('user_role', 'mahasiswa') }}">
 
                 {{-- Pilihan Role Pendaftar --}}
@@ -93,7 +93,7 @@
                             <svg id="eye-off-icon-password_confirmation" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 .847 0 1.67.127 2.456.371M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 2l20 20"></path></svg>
                         </button>
                     </div>
-                    
+
                     <button type="button" onclick="nextStep()" class="w-full bg-slate-800 text-white font-extrabold py-4 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all mt-6 flex items-center justify-center gap-2 shadow-lg shadow-slate-800/10">
                         Lanjut Langkah Ke-2
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -108,11 +108,15 @@
                         @error('nama_mahasiswa') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">NPM</label>
+                        <input type="text" name="npm" value="{{ old('npm') }}" class="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Masukkan NPM">
+                    </div>
+                    <div>
                         <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Instansi / Universitas</label>
                         <input type="text" name="instansi" value="{{ old('instansi') }}" class="w-full px-5 py-4 rounded-2xl border @error('instansi') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Asal kampus Anda">
                         @error('instansi') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2.5 ml-1">Jenjang</label>
@@ -131,12 +135,12 @@
                             <option value="Perempuan" @if(old('jenis_kelamin') == 'Perempuan') selected @endif>Perempuan</option>
                         </select>
                     </div>
-                    
+
                     <div class="flex gap-4">
                         <button type="button" onclick="prevStep()" class="w-1/3 bg-slate-100 text-slate-500 font-extrabold py-4 rounded-2xl hover:bg-slate-200 transition-all mt-6 flex items-center justify-center gap-2">
                             Kembali
                         </button>
-                        <button type="submit" class="w-2/3 bg-primary text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-6">
+                        <button type="submit" class="w-2/3 bg-brand text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-6">
                             Daftar Akun
                         </button>
                     </div>
@@ -154,7 +158,7 @@
                         <input type="text" name="instansi_dosen" value="{{ old('instansi_dosen') }}" class="w-full px-5 py-4 rounded-2xl border @error('instansi_dosen') border-red-300 @else border-slate-100 @enderror bg-slate-50/50 outline-none focus:border-brand focus:bg-white transition-all text-sm" placeholder="Tempat Anda mengajar">
                         @error('instansi_dosen') <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p> @enderror
                     </div>
-                    
+
                     <div class="flex gap-4">
                         <button type="button" onclick="prevStep()" class="w-1/3 bg-slate-100 text-slate-500 font-extrabold py-4 rounded-2xl hover:bg-slate-200 transition-all mt-6 flex items-center justify-center gap-2">
                             Kembali
@@ -175,20 +179,20 @@
     <script>
         function selectRole(role) {
             document.getElementById('user_role').value = role;
-            
+
             const tabMahasiswa = document.getElementById('tab-mahasiswa');
             const tabDosen = document.getElementById('tab-dosen');
 
             if (role === 'mahasiswa') {
                 tabMahasiswa.classList.add('bg-white', 'text-brand', 'shadow-sm');
                 tabMahasiswa.classList.remove('text-slate-500');
-                
+
                 tabDosen.classList.remove('bg-white', 'text-brand', 'shadow-sm');
                 tabDosen.classList.add('text-slate-500');
             } else {
                 tabDosen.classList.add('bg-white', 'text-brand', 'shadow-sm');
                 tabDosen.classList.remove('text-slate-500');
-                
+
                 tabMahasiswa.classList.remove('bg-white', 'text-brand', 'shadow-sm');
                 tabMahasiswa.classList.add('text-slate-500');
             }
@@ -236,12 +240,50 @@
                 }
             });
 
+            const email = document.querySelector('input[name="email"]');
+
+            if (
+                email &&
+                !/^[^\s@]+@[^\s@]+$/.test(email.value)
+            ) {
+                isStep1Valid = false;
+
+                email.classList.add('border-red-300');
+
+                const errorMsg = document.createElement('p');
+                errorMsg.className = 'text-red-500 text-xs mt-1.5 ml-1 dynamic-error';
+                errorMsg.textContent = 'Email tidak valid.';
+                email.closest('div').appendChild(errorMsg);
+            }
+
+            if (password.value.length < 6) {
+                isStep1Valid = false;
+
+                password.classList.add('border-red-300');
+
+                const errorMsg = document.createElement('p');
+                errorMsg.className = 'text-red-500 text-xs mt-1.5 ml-1 dynamic-error';
+                errorMsg.textContent = 'Password minimal 6 karakter.';
+                password.closest('div').appendChild(errorMsg);
+            }
+
+            if (password.value !== passwordConfirmation.value) {
+                isStep1Valid = false;
+
+                passwordConfirmation.classList.add('border-red-300');
+
+                const errorMsg = document.createElement('p');
+                errorMsg.className = 'text-red-500 text-xs mt-1.5 ml-1 dynamic-error';
+                errorMsg.textContent = 'Konfirmasi password tidak sama.';
+                passwordConfirmation.closest('div').appendChild(errorMsg);
+            }
+
             const role = document.getElementById('user_role').value;
             if (!isStep1Valid) return;
-            
+
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('role-selector').classList.add('hidden');
-            
+
             if (role === 'mahasiswa') {
                 document.getElementById('step2-mahasiswa').classList.remove('hidden');
             } else {
@@ -257,7 +299,7 @@
         function prevStep() {
             document.getElementById('step2-mahasiswa').classList.add('hidden');
             document.getElementById('step2-dosen').classList.add('hidden');
-            
+
             document.getElementById('step1').classList.remove('hidden');
             document.getElementById('role-selector').classList.remove('hidden');
 
