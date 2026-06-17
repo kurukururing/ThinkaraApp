@@ -63,8 +63,30 @@
             </button>
         </header>
 
+        <!-- Filter and Search -->
+        <div class="px-10 pt-8 pb-2 shrink-0">
+            <form method="GET" action="{{ route('admin.soal') }}" class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1 relative">
+                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari topik atau isi soal..." class="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-4 py-3 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700 shadow-sm">
+                </div>
+                <div class="w-full md:w-64">
+                    <select name="kategori" class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 focus:ring-4 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] outline-none transition-all font-medium text-slate-700 shadow-sm appearance-none" onchange="this.form.submit()">
+                        <option value="">Semua Kategori</option>
+                        <option value="1" {{ request('kategori') == '1' ? 'selected' : '' }}>Argument Builder</option>
+                        <option value="2" {{ request('kategori') == '2' ? 'selected' : '' }}>Fallacy Finder</option>
+                        <option value="3" {{ request('kategori') == '3' ? 'selected' : '' }}>Fix The Argument</option>
+                        <option value="4" {{ request('kategori') == '4' ? 'selected' : '' }}>Gamified QTE</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-700 transition-colors shadow-sm whitespace-nowrap">
+                    Cari & Filter
+                </button>
+            </form>
+        </div>
+
         <!-- Scrollable Table Area -->
-        <div class="flex-1 overflow-y-auto p-10">
+        <div class="flex-1 overflow-y-auto px-10 pb-10 pt-4">
 
             <!-- Tampilkan Notifikasi -->
             @if(session('success'))
@@ -92,7 +114,18 @@
                                     <td class="p-5 px-6 font-bold text-slate-400">#{{ $item->id_soal }}</td>
                                     <td class="p-5 px-6">
                                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#7c3aed]/10 text-[#7c3aed] border border-[#7c3aed]/20">
-                                            <i data-lucide="gamepad-2" class="w-3.5 h-3.5"></i> Latihan {{ $item->id_latihan }}
+                                            <i data-lucide="gamepad-2" class="w-3.5 h-3.5"></i>
+                                            @if($item->id_latihan == 1)
+                                                Argument Builder
+                                            @elseif($item->id_latihan == 2)
+                                                Fallacy Finder
+                                            @elseif($item->id_latihan == 3)
+                                                Fix The Argument
+                                            @elseif($item->id_latihan == 4)
+                                                Gamified QTE
+                                            @else
+                                                Lainnya
+                                            @endif
                                         </span>
                                     </td>
                                     <td class="p-5 px-6 font-semibold text-slate-900 leading-snug">{{ $item->topik }}</td>

@@ -57,9 +57,23 @@ class AdminController extends Controller
         return view('admin.pengguna', compact('pengguna'));
     }
 
-    public function soal()
+    public function soal(Request $request)
     {
-        $soal = Soal::with(['builderItems', 'fallacyItems', 'qteItems'])->orderBy('id_latihan')->get();
+        $query = Soal::with(['builderItems', 'fallacyItems', 'qteItems']);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('topik', 'like', "%{$search}%")
+                  ->orWhere('isi_soal', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('id_latihan', $request->input('kategori'));
+        }
+
+        $soal = $query->orderBy('id_latihan')->orderBy('id_soal', 'desc')->get();
         return view('admin.soal', compact('soal'));
     }
 
